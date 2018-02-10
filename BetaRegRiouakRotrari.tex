@@ -144,7 +144,23 @@
 \section{Il modello di regressione Beta}
 Sia $y_1, y_2, ... ,y_n$ un campione casuale tale che $	\forall_{i=1}^n: y_i \sim \mathbb{\mathcal{B}}(\mu_i, \phi)$. Il modello di regessione Beta è definito nel seguente modo
 $$ g(\mu_i)=x_i^t\beta=\eta_i$$
-dove $\beta=(\beta_1, \beta_2, ..., \beta_k)^t$, con $k<n$, è un vettore $k \times 1$, $x_i=(x_{i1}, x_{i2},...,x_{ik})^t$ è un vettore di $k$ variabili esplicative mentre $\eta_i=\beta_1x_{i1}...\beta_kx_{ik}$\footnote{Per convenzione $x_{i1}=1$. In tal modo ogni modello ha l'intercetta (null-model) \cite{PV}. } è un predittore lineare. Infine $g(\cdot):(0,1)\rightarrow\mathbb{R} \in \mathcal{C}^2$ è una funzione  di collegamento avente derivata seconda costante.	
+dove $\beta=(\beta_1, \beta_2, ..., \beta_k)^t$, con $k<n$, è un vettore $k \times 1$, $x_i=(x_{i1}, x_{i2},...,x_{ik})^t$ è un vettore di $k$ variabili esplicative mentre $\eta_i=\beta_1x_{i1}...\beta_kx_{ik}$\footnote{Per convenzione $x_{i1}=1$. In tal modo ogni modello ha l'intercetta (null-model) \cite{PV}. } è un predittore lineare. Infine $g(\cdot):(0,1)\rightarrow\mathbb{R} \in \mathcal{C}^2$ è una funzione  di collegamento avente derivata seconda costante. Le funzioni di collegamento più utilizzate sono:
+%%FIX-ME: Aggiungere commenti e dettagliare le funzioni di collegamento.
+\begin{itemize}
+	\item \textbf{logit:} $g(\mu)=log(\frac{\mu}{(1-\mu)}) $
+	\item \textbf{porbit:} $g(\mu)=\varPhi^{-1}(\mu)$, dove $\varPhi(\cdot)$ è la funzioni di distribuzione normale.
+	\item \textbf{log-log complementare:}\\ $g(\mu)=\log(-\log(1-\mu))$
+	\item \textbf{log-log:}$g(\mu)=\log(-\log(\mu))$
+	\item \textbf{Cauchy:} $g(\mu)=\tan(\pi(\mu-0.5))$
+\end{itemize}
+
+Denotiamo con $l(\beta,\phi)=\sum_{i=1}^{n}l_i(\mu_i,\phi)$ la funzione di verso somiglianza, dove 
+\begin{align*}
+l_i(\mu_i, \phi)=&\log \Gamma(\phi)-\log (\mu_i\phi)\\
+&-\log\Gamma((1-\mu_i)\phi)+(\mu_i\phi-1)\log y_i \\&
++  \{(1-\mu_i)\phi -1 \}\log(1-y_i)
+\end{align*}
+
 \newpage
 \tableofcontents
 \listofalgorithmes
