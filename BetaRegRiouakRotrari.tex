@@ -1,4 +1,3 @@
-
 \documentclass[twoside,twocolumn]{article}
 \usepackage{stackengine}
 \usepackage{blindtext} 
@@ -145,13 +144,10 @@
 \section{Il modello di regressione Beta}
 Sia $y_1, y_2, ... ,y_n$ un campione casuale tale che $	\forall_{i=1}^n: y_i \sim \mathbb{\mathcal{B}}(\mu_i, \phi)$. Il modello di regessione Beta è definito nel seguente modo
 $$ g(\mu_i)=x_i^t\beta=\eta_i$$
-dove $\beta=(\beta_1, \beta_2, ..., \beta_k)^t$, con $k<n$, è un vettore $k \times 1$, $x_i=(x_{i1}, x_{i2},...,x_{ik})^t$ è un vettore di $k$ variabili esplicative mentre $\eta_i=\beta_1x_{i1}...\beta_kx_{ik}$\footnote{Per convenzione $x_{i1}=1$. In tal modo ogni modello ha l'intercetta (null-model) \cite{PV}. } è un predittore lineare. Infine $g(\cdot):(0,1)\rightarrow\mathbb{R} \in \mathcal{C}^2$ è una funzione  di collegamento avente derivata seconda costante.
-
-	
+dove $\beta=(\beta_1, \beta_2, ..., \beta_k)^t$, con $k<n$, è un vettore $k \times 1$, $x_i=(x_{i1}, x_{i2},...,x_{ik})^t$ è un vettore di $k$ variabili esplicative mentre $\eta_i=\beta_1x_{i1}...\beta_kx_{ik}$\footnote{Per convenzione $x_{i1}=1$. In tal modo ogni modello ha l'intercetta (null-model) \cite{PV}. } è un predittore lineare. Infine $g(\cdot):(0,1)\rightarrow\mathbb{R} \in \mathcal{C}^2$ è una funzione  di collegamento avente derivata seconda costante.	
 \newpage
 \tableofcontents
 \listofalgorithmes
-
 		\begin{thebibliography}{99} 
 	\bibitem{2004} \textbf{Beta Regression for Modelling Rates and Proportions.}, Ferrari SLP, Cribari-Neto Francisco (2004).  Journal of Applied Statistics, 31(7), 799–815.
 	\bibitem{CNF} \textbf{Beta Regression in R}, Francisco Cribari-Neto, Achim Zeileis.\\
