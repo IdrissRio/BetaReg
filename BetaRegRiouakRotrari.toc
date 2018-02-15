@@ -1,8 +1,9 @@
 \select@language {italian}
 \select@language {italian}
 \contentsline {section}{\numberline {I}Introduzione}{1}{section.1}
-\contentsline {section}{\numberline {II}Beta distribuzione}{1}{section.2}
+\contentsline {section}{\numberline {II}Beta distribuzione}{2}{section.2}
 \contentsline {section}{\numberline {III}Il modello di regressione Beta}{2}{section.3}
-\contentsline {section}{Indice}{3}{section.3}
-\contentsline {section}{List of Algorithms}{3}{section.3}
-\contentsline {section}{Riferimenti bibliografici}{3}{section.3}
+\contentsline {subsection}{\numberline {i}Determinizzazione degli stimatori.}{3}{subsection.3.1}
+\contentsline {subsection}{\numberline {ii}Intervallo di confidenza}{3}{subsection.3.2}
+\contentsline {section}{Indice}{4}{subsection.3.2}
+\contentsline {section}{Riferimenti bibliografici}{4}{subsection.3.2}

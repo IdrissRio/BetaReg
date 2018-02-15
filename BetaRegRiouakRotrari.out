@@ -1,6 +1,7 @@
 \BOOKMARK [1][-]{section.1}{Introduzione}{}% 1
 \BOOKMARK [1][-]{section.2}{Beta\040distribuzione}{}% 2
 \BOOKMARK [1][-]{section.3}{Il\040modello\040di\040regressione\040Beta}{}% 3
-\BOOKMARK [1][-]{section.3}{Indice}{}% 4
-\BOOKMARK [1][-]{section.3}{List\040of\040Algorithms}{}% 5
-\BOOKMARK [1][-]{section.3}{Riferimenti\040bibliografici}{}% 6
+\BOOKMARK [2][-]{subsection.3.1}{Determinizzazione\040degli\040stimatori.}{section.3}% 4
+\BOOKMARK [2][-]{subsection.3.2}{Intervallo\040di\040confidenza}{section.3}% 5
+\BOOKMARK [1][-]{subsection.3.2}{Indice}{}% 6
+\BOOKMARK [1][-]{subsection.3.2}{Riferimenti\040bibliografici}{}% 7
