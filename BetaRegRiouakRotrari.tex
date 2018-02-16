@@ -276,12 +276,14 @@ con $\hat{\eta}=x_0^t \hat{\beta}$ e $SE(\hat{\eta})=\sqrt{x_0^t \widehat{\text{
 
 \section{Pacchetto BetaReg}
 Il pacchetto BetaReg è una collezione di funzioni implementate in ``R system for statistica computing",  con la quale è possibile fare inferenza su variabili beta distribuite. Il pacchetto è disponibile presso il \emph{``Comprehensive R Archive Network" (CRAN).} Le versioni dalla 1.0 alla 1.2 sono state implementate da \emph{Simas e Rocha} fino al 2006. Dalla versione 2.0, il principale contribuente alla manutenzione e all'estensione del pacchetto è stato \emph{Achim Zeileis}, coautore dell'articolo \cite{BReg2006}.
-
-Di seguito la \emph{signature} della funzione \emph{betareg}:
-\begin{lstlisting}[caption={Signature della funzione betareg},columns=full]
+\begin{lstlisting}[caption={Signature della funzione betareg},float=*]
 betareg(formula, data, subset, na.action, weights, offset,
 link = "logit", link.phi = NULL, control = betareg.control(...), model = TRUE, y = TRUE, x = FALSE, ...)
+\label{l}
 \end{lstlisting}
+La main-function \texttt{betareg()} è stata progettata e implementata per essere il più simile possibile alla funzione standard \texttt{glm()} (General Linear Model).
+Di seguito la \emph{signature} della funzione \texttt{betareg}.
+
 
 \newpage
 \tableofcontents
