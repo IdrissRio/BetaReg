@@ -200,10 +200,10 @@ l_i(\mu_i, \phi)=&\log \Gamma(\phi)-\log (\mu_i\phi)\\
 con $\mu_i$ definito come nell'equazione \eqref{eq:mui} ovvero $\mu_i=g^{-1}(x_i^t\beta)$.
 
 Nel 2010 è stata formulata un'estensione del modello a dispersione variabile considerando il parametro di precisione non più costante per tutte le osservazioni ma modellato come parametro della media. Le osservazioni $y_i \sim \mathbb{\mathcal{B}}(\mu_i, \phi_i)$ indipendenti con 
-\begin{align*}
-g_1(\mu_i)&=\ni_1i=x{_i}^T \beta,\\
-g_2(\phi_i)&=\ni_2i=z{_i}^T \gamma,
-\end{align*}
+\begin{align}
+g_1(\mu_i)&=\eta_{1i}=x{_i}^T \beta, \label{eq:mean}\\
+g_2(\phi_i)&=\eta_{2i}=z{_i}^T \gamma, \label{eq:precisione}
+\end{align}
 con $\beta=(\beta_1,....,\beta_k)^T , \  e \ \gamma=(\gamma_1,..,\gamma_h)^T , k+h<n$ insieme dei coefficienti di regressione, $x_i \ e \ z_i$ vettori di reggressori e $\ni_1i \ e \ni_21 $ predittori lineari. Per quanto riguarda i residui vengono usati i residui di Pearson che Ferrari e Cribari chiamano residui ordinari standardizzati
 $$r_{P,i=\frac{y_i-\hat{\mu}_i}{\sqrt{\hat{V(y_i)}}}}$$  dove $\hat{V}(y_i)\frac{\hat{\mu}_i(1-\hat{\mu}_i)}{(1+\hat{\psi}_i)}$ con $\hat{\mu}_i=g_1 ^{-1}(x_i ^T \hat{\beta}) \ e \ \hat{\phi_i}=g_2^{-1}(z_i ^T \hat{\gamma}_i)$.
 
@@ -284,6 +284,14 @@ link = "logit", link.phi = NULL, control = betareg.control(...), model = TRUE, y
 La main-function \texttt{betareg()} è stata progettata e implementata per essere il più simile possibile alla funzione standard \texttt{glm()} (General Linear Model).
 Di seguito la \emph{signature} della funzione \texttt{betareg}.
 
+
+
+Di seguito un esempio per fissare le idee: consideriamo la seguente \texttt{formula} $$\mathtt{y \sim x_1+x_2}$$ che descrive $y_i$ e $x_i$ per l'equazione \eqref{eq:mean} mentre l'equazione \eqref{eq:precisione} sarà quella banale cioè avremo $\phi_i$ costante e di conseguenza $z_i=1$ e la funzione di collegamento $g_2$ la funzione identità; che corrisponde al modello base definito nel (2004).
+ Possiamo specificare un secondo insieme di regressori tramite la formula two-part in questo modo:\\
+  \texttt{formula} $$\mathtt{y \sim x_1+x_2 | z_1+z_2+z_3}$$ 
+in questo caso abbiamo la stessa formulazione della media \eqref{eq:mean} mentre la \eqref{eq:precisione} non è più banale. I regressori $z_i$ vengo presi dalla \texttt{$z_1+z_2+z_3$}, alla funzione di collegamento viene assegnata la funzione logaritmo cioè $g_2(\cdot)=log(\cdot).$
+
+Di conseguenza $\mathtt{y \sim x_1+x_2}$ e $\mathtt{y \sim x_1+x_2 | 1}$ corrisponde alla stessa beta vero-somiglianza ma usano una diversa  parametrizzazione per $\phi_i$ cioè $\phi_i=\gamma_1$ nel primo caso e $\log(\phi)=\gamma_1$ nel secondo. 
 
 \newpage
 \tableofcontents
