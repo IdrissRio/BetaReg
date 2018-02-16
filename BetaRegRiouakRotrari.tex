@@ -205,18 +205,34 @@ Sia dunque $K$ la matrice d'informazione di \emph{Fisher}:
 \end{equation}
 dove 
 \begin{itemize}
-	\item $K_{\beta\beta}=\phi X^tWX$
-	\item $K_{\beta\phi}=K_{\phi_\beta}^t=X^tTc$
+	\item $K_{\beta\beta}=\phi X^tWX$,
+	\item $K_{\beta\phi}=K_{\phi_\beta}^t=X^tTc$,
 	\item $K_{\phi \phi}=tr(D)$.
 \end{itemize}
 
-Sotto le condizioni di normalità, d'indipendenza e di omogeneità delle variabili, quando la grandezza del campione è grande, vale che
+Sotto le condizioni di normalità, d'indipendenza e di omogeneità di varianza delle variabili, quando la grandezza del campione è grande, vale che
 $$ \begin{pmatrix}\hat{\beta}\\ \hat{\phi} \end{pmatrix} \sim \mathcal{N}_{k+1}\Bigg(\begin{pmatrix}\beta\\ \phi \end{pmatrix},K^{-1}\Bigg).$$ 
 
-Denoteremo con $SE(\hat{\beta})$ l'errore standard asintottico del MLE $\hat{\beta}$, che si ottiene dall'inversa della matrice di \emph{Fisher} \eqref{eq:Fisher} valutata in $\hat{\beta}$ e in $\hat{\phi}$.
+Denoteremo con $SE(\hat{\beta_j})$ l'errore standard asintottico del MLE $\hat{\beta_j}$, che si ottiene dall'inversa della matrice di \emph{Fisher} \eqref{eq:Fisher} valutata in $\hat{\beta_j}$ e in $\hat{\phi}$.
 
 \subsection{Intervallo di confidenza}
+E' possibile determinare un intervallo di confidenza $(1-\alpha)100\%$\footnote{con $\alpha \in (0,\frac{1}{2})$.} per i coefficienti $\hat{\beta}_j$, con $j=1,...,k$. Tale intervallo è:
+$$ \bigg[\hat{\beta_j} \pm \Phi^{-1}\bigg(1-\frac{\alpha}{2}SE(\hat{\beta_j})\bigg)\bigg], $$
+dove $\Phi(\cdot)$ è la funzione di distribuzione cumulativa di una variabile casuale normale. 
 
+Analogamente un intervallo di confidenza $(1-\alpha)100\%$ per il parametro $\hat{\phi}$ è il seguente
+$$\bigg[\hat{\phi} \pm \Phi^{-1}\bigg(1-\frac{\alpha}{2}SE(\hat{\phi})\bigg)  \bigg] $$ dove 
+\begin{align*}
+SE(\hat{\phi})&=\sqrt{tr(D)-\phi^{-1}c^tT^tX(X^tWX)^{-1}X^tTc}\\
+&=\sqrt{\hat{\gamma}}.
+\end{align*}
+
+In fine è possibile determinare un intervallo di confidenza $(1-\alpha)100\%$ per il valore atteso della variabile risposta $\mu$ per un dato vettore d'osservazioni delle variabili regressori $x_0=[1,x_{01},x_{02},...,x_{0k}]$:
+$$[Lim_{sx}, Lim_{dx}]\footnote{Tale intervallo è valido solo per funzioni di collegamento $g(\cdot)$ strettamente crescenti.}$$ dove 
+$$Lim_{sx}=\bigg[ g^{-1}\bigg(\hat{\eta} -\Phi^{-1}\Big(\frac{1-\alpha}{2}\Big)SE(\hat{\eta})\bigg)  \bigg]  $$
+mentre
+$$ Lim_{dx}=\bigg[ g^{-1}\bigg(\hat{\eta} +\Phi^{-1}\Big(\frac{1-\alpha}{2}\Big)SE(\hat{\eta})\bigg)  \bigg], $$
+con $\hat{\eta}=x_0^t \hat{\beta}$ e $SE(\hat{\eta})=\sqrt{x_0^t \widehat{\text{cov}}(\hat{\beta})x_0}$ dove $\widehat{\text{cov}}(\hat{\beta})$ è ottenuto dall'inversa della matrice di \emph{Fisher} \eqref{eq:Fisher} valutata negli MLEs escludendo la riga e la colonna relative al parametro di precisione $\hat{\phi}$.
 \newpage
 \tableofcontents
 		\begin{thebibliography}{99} 
