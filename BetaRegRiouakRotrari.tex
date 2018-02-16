@@ -1,4 +1,40 @@
 \documentclass[twoside,twocolumn]{article}
+
+\usepackage{graphicx}
+\usepackage{fancyvrb}
+\usepackage{listings}
+\usepackage{bm}
+\usepackage{xcolor}
+\xdefinecolor{gray}{rgb}{0.4,0.4,0.4}
+\xdefinecolor{blue}{RGB}{58,95,205}% R's royalblue3; #3A5FCD
+
+\lstset{% setup listings
+	language=R,% set programming language
+	basicstyle=\ttfamily\small,% basic font style
+	keywordstyle=\color{blue},% keyword style
+	commentstyle=\color{gray},% comment style
+	numbers=none,% display line numbers on the left side
+	numberstyle=\scriptsize,% use small line numbers
+	numbersep=10pt,% space between line numbers and code
+	backgroundcolor = \color{yellow!10},
+	framexleftmargin = 1em,
+	framextopmargin = 1em
+	framexbottommargin = 1em
+	tabsize=3,% sizes of tabs
+	showstringspaces=false,% do not replace spaces in strings by a certain character
+	captionpos=b,% positioning of the caption below
+	breaklines=true,% automatic line breaking
+	escapeinside={(*}{*)},% escaping to LaTeX
+	fancyvrb=true,% verbatim code is typset by listings
+	extendedchars=false,% prohibit extended chars (chars of codes 128--255)
+	literate={"}{{\texttt{"}}}1{<-}{{$\bm\leftarrow$}}1{<<-}{{$\bm\twoheadleftarrow$}}1
+	{~}{{$\bm\sim$}}1{<=}{{$\bm\le$}}1{>=}{{$\bm\ge$}}1{!=}{{$\bm\neq$}}1{^}{{$^{\bm\wedge}$}}1,% item to replace, text, length of chars
+	alsoletter={.<-},% becomes a letter
+	alsoother={$},% becomes other
+	otherkeywords={!=, ~, $, \&, \%/\%, \%*\%, \%\%, <-, <<-, /},% other keywords
+	deletekeywords={c}% remove keywords
+}
+
 \usepackage{stackengine}
 \usepackage{blindtext} 
 \usepackage{amsmath}
@@ -6,8 +42,10 @@
 \usepackage[T1]{fontenc} 
 \linespread{1.05} 
 \usepackage{microtype} 
+\usepackage{standalone}
 \usepackage{amssymb}
 \usepackage[italian]{babel} 
+
 \usepackage{tikz}
 \usepackage[hmarginratio=1:1,top=32mm,columnsep=20pt]{geometry} 
 \usepackage[hang, small,labelfont=bf,up,textfont=it,up]{caption} 
@@ -50,6 +88,7 @@
 \newcommand{\qunohat}{$\hat{q_1}$}
 \newcommand{\yslant}{0.5}
 \newcommand{\xslant}{-0.6}
+
 \usepackage{titling}
 
 \usepackage{hyperref} 
@@ -107,19 +146,25 @@
 	\end{equation}
 
 	dove la componente casuale $\varepsilon_i$ è normalmente distribuita con media zero e varianza $\sigma^2$.
-	Tale modello è ampiamente utilizzato in svariate applicazione, tuttavia non è appropriato per situazioni dove la variabile risposta è limitata ad assumere valori in un intervallo $(0,1)$, in quanto, i valori stimati potrebbero eccedere tale intervallo \footnote{Un esempio classico è <<Teaching Program>>\cite{PV}(pg. 67)}. Per ovviare a questo problema, prima dell'avvento del modello di regressione con variabili \textit{Beta}, la variabile di risposta $y$ veniva trasformata per poter assumere valori in$\mathbb{R}$, per esempio applicando$\tilde{y}=log(\frac{y}{1-y})$ alla quale veniva applicato il modello di regressione lineare semplice. Ma tale approccio presentava alcune problematiche come: I parametri venivano interpretati rispetto a $E[\tilde{y}]$ anziché rispetto a $E[y]$; le variabili casuali con valori nell'intervallo unitario sono tipicamente eteroschedastiche che causano la mancanza di alcune ipotesi fondamentali nel modello di regressione lineare (la varianza aumentava all'avvicinarsi della media e decresceva spostandosi verso i limiti dell'intervallo) ed infine l'asimmetria della distribuzione di tassi e di proporzioni dunque la stima degli intervalli per il test dell'ipotesi basate su approssimazioni Gaussiane portavano a grosse imprecisioni sopratutto in campioni di piccole dimensioni.
-
-	Nel 2004, Cribari-Neto e Ferrari, con l'articolo \emph{"Beta Regression for Modelling Rates and Proportions"} \cite{2004}, propongono un nuovo modello di regressione per variabili continue con valori in $(0,1)$ come possono essere proporzioni e tassi, assumendo che la variabile risposta sia beta-distribuita. Successivamente nel 2016, nell'articolo \emph{``Beta Regression in R''} \cite{CNF}, i due autori forniscono un'implementazione in R di tale modello.
+	Tale modello è ampiamente utilizzato in svariate applicazione, tuttavia non è appropriato per situazioni dove la variabile risposta è limitata ad assumere valori in un intervallo $(0,1)$, in quanto, i valori stimati potrebbero eccedere tale intervallo \footnote{Un esempio classico è <<Teaching Program>>\cite{PV}(pg. 67)}. 
+	
+	Prima dell'avvento del modello di regressione con variabili Beta, per effettuare un'analisi in cui la variabile di risposta (v.r.) $y$ assumeva valori in (0,1), era consuetudine effettuare delle trasformazioni di $y$. Dunque si considerava $\tilde{y}=log(\frac{y}{1-y})$ alla quale veniva applicato il modello di regressione lineare semplice. Tale approccio presentava le seguenti problematiche:
+	\begin{enumerate}[label=\Roman*]
+		\item Disugaglianza di Jensen: ovvero i parametri dovevano essere interpretati rispetto il valore atteso di $\tilde{y}$ anziché rispetto quello di $y$.
+		\item Eteroschedasticità: la varianza aumentava all'avvicinarsi della media e decresceva spostandosi versoi limiti dell'intervallo.
+		\item Asimmetria: in generale la distribuzione di tassi e di proporzioni è asimmetrica e dunque la stima degli intervalli per il test dell'ipotesi basate su approssimazioni Gaussiane potrebbero essere imprecise per campioni di piccole dimensioni.
+	\end{enumerate}
+	Nel 2004, Cribari-Neto e Ferrari, con l'articolo \emph{``Beta Regression for Modelling Rates and Proportions"} \cite{2004}, descrivono come il modello di regressione con variabili Beta sia il migliore per trattare proporzioni e tassi. Successivamente nel 2016, nell'articolo \emph{``Beta Regression in R''} \cite{CNF}, i due autori forniscono un'implementazione in R di tale modello.
 	
 	\section{Beta distribuzione}
-	Come già anticipato, il modello di regressione Beta si basa sull'ipotesi che la variabile risposta $y$ sia \textit{beta}-distribuita.
-	La distribuzione Beta e una distribuzione di probabilità continua definita da due parametri $p$ e $q$ sul''intervallo unitario $[0,1]$. \footnote{Si noti che se la variabile $y$ dovesse assumere valori nell'intervallo $(a,b)$, dove $a < b$ e siano valori noti, allora è possibile modellare $\frac{y-a}{b-a}$ al posto di $y$. Mentre se la variabile $y$ dovesse assumere come valori in [0,1], una possibile trasformazione potrebbe essere $\frac{y\cdot (n-1) \cdot 0.5}{n}$ dove $n$ è la grandezza del campione.} Questa distribuzione governa la probabilità $p$ di un Processo di Bernoulli a posteriori dell'osservazione di $\alpha -1$ successi e $\beta -1$ insuccessi quando $p$  è a priori distribuita uniformemente tra $0$ e $1$. 
+	Come già anticipato, il modello di regressione con variabili Beta, d'ora in avanti BetaReg, si presta perfettamente per modellare situazioni in cui la variabile di risposta $y$ assuma valori nell'intervallo aperto (0,1)\footnote{Si noti che se la variabile $y$ dovesse assumere valori nell'intervallo $(a,b)$, dove $a < b$ e sia $a$ che $b$ sono valori noti, allora è possibile modellare $\frac{y-a}{b-a}$ al posto di $y$. Mentre se la variabile $y$ dovesse assumere come valori in [0,1], una possibile trasformazione potrebbe essere $\frac{y\cdot (n-1) \cdot 0.5}{n}$ dove $n$ è la grandezza del campione.}. 
 	
-	La funzione densità di probabilità di una variabile casuale beta è data nel seguente modo:
+	BetaReg è basato su un'alternativa parametrizzazione della funzione di densità della distribuzione beta;
+	la funzione di densità di una variabile casuale (v.c.) beta è data nel seguente modo
 	$$f(y;p,q)=\frac{\Gamma(p+q)}{\Gamma(p)\Gamma(q)}y^{p-1}(1-y)^{q-1},\ \ \ \ 0 <y<1$$ 
-	Dove $p>0$ e $q>0$ e $\Gamma(\cdot)$ è la funzione gamma $\Gamma(z)=\int_{0}^{+ \infty} t^{z-1} e^{-t} dt.$ 
+	Dove $p>0$ e $q>0$ e $\Gamma(\cdot)$ è la funzione gamma. 
 	
-	\emph{Ferrari e Cribari-Neto} ne hanno proposto una parametrizzazione differente per il suo utilizzo nel modello:
+	\emph{Ferrari e Cribari-Neto} ne hanno proposto una parametrizzazione differente:
 
 	$$
 		\hspace{-4mm}
@@ -137,16 +182,17 @@
 	
 	
 	
-	Denoteremo con $y \sim \mathbb{\mathcal{B}}(\mu,\phi)$ se  la v.c. $y$ segue una beta distribuzione con parametri $\mu$ e $\phi$. Si noti che $p=\mu\phi$ e $q=\phi(1-\mu)$, da cui segue che $$E(y)=\mu \ \ e \ \ V(y)=\frac{V(\mu)}{1+\phi}=\frac{\mu(1-\mu)}{1+\phi}$$. 
+	Denoteremo con $y \sim \mathbb{\mathcal{B}}(\mu,\phi)$ se  la v.c. $y$ segue una beta distribuzione con parametri $\mu$ e $\phi$. Si noti che $p=\mu\phi$ e $q=\phi(1-\mu)$, da cui segue che $E(y)=\mu$ e che $VAR(y)=\frac{V(\mu)}{1+\phi}=\frac{\mu(1-\mu)}{1+\phi}$. 
 	
-	Il parametro $\phi$ è anche chiamato \emph{parametro di precisione}, in quanto per $\mu$ fissato, all'aumentare di $\phi$ diminuisce il valore della varianza.
+	Il parametro $\phi$ è anche chiamato \emph{parametro di precisione}, in quanto  per un fissato $\mu$, all'aumentare di $\phi$ diminuisce il valore della varianza.
 
 \section{Il modello di regressione Beta}
-Sia $y_1, y_2, ... ,y_n$ un campionamento casuale tale che $\forall_{i=1}^n: y_i \sim \mathbb{\mathcal{B}}(\mu_i, \phi)$. Il modello di regressione Beta è definito nel seguente modo
+Sia $y_1, y_2, ... ,y_n$ un campione casuale tale che $	\forall_{i=1}^n: y_i \sim \mathbb{\mathcal{B}}(\mu_i, \phi)$. Il modello di regressione Beta è definito nel seguente modo
 \begin{equation}g(\mu_i)=x_i^t\beta=\eta_i
 \label{eq:mui}
 \end{equation}
-dove $\beta=(\beta_1, \beta_2, ..., \beta_k)^t$, con $k<n$, è un vettore $k \times 1$, $x_i=(x_{i1}, x_{i2},...,x_{ik})^t$ è un vettore di $k$ variabili esplicative, per convenzione $x_{i1}=1$ in tal modo ogni modello ha l'intercetta; mentre $\eta_i=\beta_1x_{i1}+...+\beta_kx_{ik}$ è un predittore lineare. Infine $g(\cdot):(0,1)\rightarrow\mathbb{R} \in \mathcal{C}^2$ è una funzione  di collegamento avente derivata seconda costante. Le funzioni di collegamento più utilizzate sono:
+
+dove $\beta=(\beta_1, \beta_2, ..., \beta_k)^t$, con $k<n$, è un vettore $k \times 1$, $x_i=(x_{i1}, x_{i2},...,x_{ik})^t$ è un vettore di $k$ variabili esplicative mentre $\eta_i=\beta_1x_{i1}...\beta_kx_{ik}$\footnote{Per convenzione $x_{i1}=1$. In tal modo ogni modello ha l'intercetta (null-model) \cite{PV}. } è un predittore lineare. Infine $g(\cdot):(0,1)\rightarrow\mathbb{R} \in \mathcal{C}^2$ è una funzione  di collegamento avente derivata seconda costante. Le funzioni di collegamento più utilizzate sono:
 %%FIX-ME: Aggiungere commenti e dettagliare le funzioni di collegamento.
 \begin{itemize}
 	\item \textbf{logit:} $g(\mu)=log(\frac{\mu}{(1-\mu)}) $
@@ -163,19 +209,6 @@ l_i(\mu_i, \phi)=&\log \Gamma(\phi)-\log (\mu_i\phi)\\
 +  \{(1-\mu_i)\phi -1 \}\log(1-y_i)
 \end{align*}
 con $\mu_i$ definito come nell'equazione \eqref{eq:mui} ovvero $\mu_i=g^{-1}(x_i^t\beta)$.
-
-Nel 2010 è stata formulata un'estensione del modello a dispersione variabile considerando il parametro di precisione non più costante per tutte le osservazioni ma modellato come parametro della media. Le osservazioni $y_i \sim \mathbb{\mathcal{B}}(\mu_i, \phi_i)$ indipendenti con 
-\begin{align*}
-g_1(\mu_i)&=\ni_1i=x{_i}^T \beta,\\
-g_2(\phi_i)&=\ni_2i=z{_i}^T \gamma,
-\end{align*}
-con $\beta=(\beta_1,....,\beta_k)^T , \  e \ \gamma=(\gamma_1,..,\gamma_h)^T , k+h<n$ insieme dei coefficienti di regressione, $x_i \ e \ z_i$ vettori di reggressori e $\ni_1i \ e \ni_21 $ predittori lineari. Per quanto riguarda i residui vengono usati i residui di Pearson che Ferrari e Cribari chiamano residui ordinari standardizzati
-$$r_{P,i=\frac{y_i-\hat{\mu}_i}{\sqrt{\hat{V(y_i)}}}}$$  dove $\hat{V}(y_i)\frac{\hat{\mu}_i(1-\hat{\mu}_i)}{(1+\hat{\psi}_i)}$ con $\hat{\mu}_i=g_1 ^{-1}(x_i ^T \hat{\beta}) \ e \ \hat{\phi_i}=g_2^{-1}(z_i ^T \hat{\gamma}_i)$.
-
-Ferrai e Cribari-Neto nell'elaborato del (2008) danno una nuova versione dei residui con proprietà migliori chiamandoli residui standardizzati pesati 2:
-
-$$r_{SW2,i}=\frac{y_i ^* - \hat{\mu}_i ^*}{\sqrt{\hat{v_i}(1-h_ii)}}$$
-dove $y_i ^* = log{y_i/(1-y_i)} \ e \ \mu _i ^* = \psi (\mu_i \phi)-\psi ((1-\mu_i)\phi)$ con $\psi (\cdot)$ la funzione standardizzata di digamma. Si standardizza poi utilizzando $v_i= {\psi ' (\mu_i\phi)+\psi '((1-\mu_i)\phi)}$ e $h_ii$ la i-esima componente della hat matrice.\cite{RESIDUAL}
 
 	\subsection{Determinizzazione degli stimatori.}
 %%FIX-ME: determinare qual'è l'intervallo di t di \mu e y.
@@ -237,15 +270,23 @@ $$[Lim_{sx}, Lim_{dx}]\footnote{Tale intervallo è valido solo per funzioni di c
 $$Lim_{sx}=\bigg[ g^{-1}\bigg(\hat{\eta} -\Phi^{-1}\Big(\frac{1-\alpha}{2}\Big)SE(\hat{\eta})\bigg)  \bigg]  $$
 mentre
 $$ Lim_{dx}=\bigg[ g^{-1}\bigg(\hat{\eta} +\Phi^{-1}\Big(\frac{1-\alpha}{2}\Big)SE(\hat{\eta})\bigg)  \bigg], $$
-con $\hat{\eta}=x_0^t \hat{\beta}$ e $SE(\hat{\eta})=\sqrt{x_0^t \widehat{\text{cov}}(\hat{\beta})x_0}$ dove $\widehat{\text{cov}}(\hat{\beta})$ è ottenuto dall'inversa della matrice di \emph{Fisher} \eqref{eq:Fisher} valutata negli MLEs escludendo la riga e la colonna relative al parametro di precisione $\hat{\phi}$.
+con $\hat{\eta}=x_0^t \hat{\beta}$ e $SE(\hat{\eta})=\sqrt{x_0^t \widehat{\text{cov}}(\hat{\beta})x_0}$ dove $\widehat{\text{cov}}(\hat{\beta})$ è ottenuto dall'inversa della matrice d'informazione di \emph{Fisher} \eqref{eq:Fisher} valutata negli MLEs escludendo la riga e la colonna relative al parametro di precisione $\hat{\phi}$.
+\section{Pacchetto BetaReg}
+Il pacchetto BetaReg è una collezione di funzioni implementate in ``R system for statistica computing",  con la quale è possibile fare inferenza su variabili beta distribuite. Il pacchetto è disponibile presso il \emph{``Comprehensive R Archive Network" (CRAN).} Le versioni dalla 1.0 alla 1.2 sono state implementate da \emph{Simas e Rocha} fino al 2006. Dalla versione 2.0, il principale contribuente alla manutenzione e all'estensione del pacchetto è stato \emph{Achim Zeileis}, coautore dell'articolo \cite{BReg2006}.
+
+Di seguito la \emph{signature} della funzione \emph{betareg}:
+\begin{lstlisting}[caption={Signature della funzione betareg},columns=full]
+betareg(formula, data, subset, na.action, weights, offset,
+link = "logit", link.phi = NULL, control = betareg.control(...), model = TRUE, y = TRUE, x = FALSE, ...)
+\end{lstlisting}
+
 \newpage
 \tableofcontents
 		\begin{thebibliography}{99} 
 	\bibitem{2004} \textbf{Beta Regression for Modelling Rates and Proportions.}, Ferrari SLP, Cribari-Neto Francisco (2004).  Journal of Applied Statistics, 31(7), 799–815.
 	\bibitem{CNF} \textbf{Beta Regression in R}, Francisco Cribari-Neto, Achim Zeileis.\\
 	\bibitem{PV} \textbf{Towards multiple linear regression and logistic regression}, Paolo Vidoni, 2017-2018. Lecture 5. Applied Statistics and Data Analysis.
-	\bibitem{RESIDUAL}\textbf{On Beta Regression Residuals} Espinheira PL, Ferrari SLP, Cribari-Neto F (2008b). Journal
-of Applied Statistics, 35(4), 407–419.
+	\bibitem{BReg2006}\textbf{betareg 1.2} - Simas AB, Rocha (2006). betareg: Beta Regression. R package \\ \texttt{http://CRAN.R-project.org/src/contrib/ Archive/betareg/}.
 	\end{thebibliography}
 
 \end{document}
