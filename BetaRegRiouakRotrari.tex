@@ -1,4 +1,38 @@
 \documentclass[twoside,twocolumn]{article}
+\usepackage{graphicx}
+\usepackage{fancyvrb}
+\usepackage{listings}
+\usepackage{bm}
+\usepackage{xcolor}
+\xdefinecolor{gray}{rgb}{0.4,0.4,0.4}
+\xdefinecolor{blue}{RGB}{58,95,205}% R's royalblue3; #3A5FCD
+
+\lstset{% setup listings
+	language=R,% set programming language
+	basicstyle=\ttfamily\small,% basic font style
+	keywordstyle=\color{blue},% keyword style
+	commentstyle=\color{gray},% comment style
+	numbers=none,% display line numbers on the left side
+	numberstyle=\scriptsize,% use small line numbers
+	numbersep=10pt,% space between line numbers and code
+	backgroundcolor = \color{yellow!10},
+	framexleftmargin = 1em,
+	framextopmargin = 1em
+	framexbottommargin = 1em
+	tabsize=3,% sizes of tabs
+	showstringspaces=false,% do not replace spaces in strings by a certain character
+	captionpos=b,% positioning of the caption below
+	breaklines=true,% automatic line breaking
+	escapeinside={(*}{*)},% escaping to LaTeX
+	fancyvrb=true,% verbatim code is typset by listings
+	extendedchars=false,% prohibit extended chars (chars of codes 128--255)
+	literate={"}{{\texttt{"}}}1{<-}{{$\bm\leftarrow$}}1{<<-}{{$\bm\twoheadleftarrow$}}1
+	{~}{{$\bm\sim$}}1{<=}{{$\bm\le$}}1{>=}{{$\bm\ge$}}1{!=}{{$\bm\neq$}}1{^}{{$^{\bm\wedge}$}}1,% item to replace, text, length of chars
+	alsoletter={.<-},% becomes a letter
+	alsoother={$},% becomes other
+	otherkeywords={!=, ~, $, \&, \%/\%, \%*\%, \%\%, <-, <<-, /},% other keywords
+	deletekeywords={c}% remove keywords
+}
 \usepackage{stackengine}
 \usepackage{blindtext} 
 \usepackage{amsmath}
@@ -239,6 +273,16 @@ $$Lim_{sx}=\bigg[ g^{-1}\bigg(\hat{\eta} -\Phi^{-1}\Big(\frac{1-\alpha}{2}\Big)S
 mentre
 $$ Lim_{dx}=\bigg[ g^{-1}\bigg(\hat{\eta} +\Phi^{-1}\Big(\frac{1-\alpha}{2}\Big)SE(\hat{\eta})\bigg)  \bigg], $$
 con $\hat{\eta}=x_0^t \hat{\beta}$ e $SE(\hat{\eta})=\sqrt{x_0^t \widehat{\text{cov}}(\hat{\beta})x_0}$ dove $\widehat{\text{cov}}(\hat{\beta})$ è ottenuto dall'inversa della matrice di \emph{Fisher} \eqref{eq:Fisher} valutata negli MLEs escludendo la riga e la colonna relative al parametro di precisione $\hat{\phi}$.
+
+\section{Pacchetto BetaReg}
+Il pacchetto BetaReg è una collezione di funzioni implementate in ``R system for statistica computing",  con la quale è possibile fare inferenza su variabili beta distribuite. Il pacchetto è disponibile presso il \emph{``Comprehensive R Archive Network" (CRAN).} Le versioni dalla 1.0 alla 1.2 sono state implementate da \emph{Simas e Rocha} fino al 2006. Dalla versione 2.0, il principale contribuente alla manutenzione e all'estensione del pacchetto è stato \emph{Achim Zeileis}, coautore dell'articolo \cite{BReg2006}.
+
+Di seguito la \emph{signature} della funzione \emph{betareg}:
+\begin{lstlisting}[caption={Signature della funzione betareg},columns=full]
+betareg(formula, data, subset, na.action, weights, offset,
+link = "logit", link.phi = NULL, control = betareg.control(...), model = TRUE, y = TRUE, x = FALSE, ...)
+\end{lstlisting}
+
 \newpage
 \tableofcontents
 		\begin{thebibliography}{99} 
