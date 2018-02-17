@@ -386,9 +386,20 @@ plot(m1, which = 2)
 \caption{Nella prima parte i comandi R utilizzati per avere i plot diagnostici, immediatamente a seguire gli stessi. }
 \end{figure}
 
- 
+\subsection{Esempio 2: Spese domestiche per gli alimenti}
+Consideriamo un secondo esempio sempre nell'ambito betareg che consiste nel trovare la dipendenza della variabile dipendente \texttt{food\ income} la proporzione di redditto che ogni famiglia spende nell'acquisto degli alimenti. Le variabili regressori sono: la variabile numerica \texttt{persons} componenti della famiglia e ovviamente la variabile \texttt{income} totale di tutte le entrate della famiglia. Visualizziamo le variabili
 
-
+%
+%<<eval=TRUE>>=
+%data("FoodExpenditure",package = "betareg")
+%plot(I(food/income) ~ income, data = FoodExpenditure, xlab = "income", 
+%     ylab = "food/income", main = "Spese per alimenti", type = "n", ylim = c(0.04, 0.57))
+%points(I(food/income) ~ income, data = FoodExpenditure, cex = 1.75, pch = 19, col =(c%("indianred4","lightpink2","indianred","lightpink3","lightpink1","lavenderblush1","floralwhite"))[persons])
+%points(I(food/income) ~ income, data = FoodExpenditure, cex = 1.75)
+%legend("topright", rev(as.character(sort(unique(FoodExpenditure$persons)))), title = "persons", col =(c("indianred4","lightpink2","indianred","lightpink3","lightpink1","lavenderblush1","floralwhite")), pch = 19, bty = "n")
+%legend("topright", rev(as.character(sort(unique(FoodExpenditure$persons)))), title = "persons", pch = 1, bty = "n")
+%@
+\includegraphics[scale=0.5]{Spese}
 
 \clearpage
 \tableofcontents
