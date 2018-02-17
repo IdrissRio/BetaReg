@@ -346,7 +346,14 @@ Nella seguente sezione verrà considerato un esempio a scopo illustrativo. L'ins
 	\item \texttt{temp}: temperatura per la quale il 100\% di petrolio greggio vaporizza.
 	\item \texttt{batch}: variabile fattore di 10 livelli. Ognuno di essi ha una propria gravità, pressione e temperatura d'evaporazione al 10\%.
 \end{itemize}
-Si procede dunque caricando la libreria \texttt{betareg}, dopo di che viene considerato un modello di regressione Beta di tipo omoschedastico, analizzanùdo il rapporto tra le variabili regressioni \texttt{batch} e \texttt{temp} rispetto la variabile risposta \texttt{yield}. Come si può vedere dal risultato presente nella figura \emph{2} è stato adattato il modello non eteroschedastico attraverso le istruzioni \texttt{m1<-betareg(yield $\sim$ batch+temp, data=GasolineYield)} con la seguente analisi del \texttt{summary(m1)}. L'output ottenuto della funzione \texttt{summary} è simile a quello delli \texttt{glm}.
+
+<<eval=TRUE>>=
+library(betareg)
+data("GasolineYield", package = "betareg")
+str(GasolineYield)
+@
+Si procede dunque caricando la libreria \texttt{betareg}, dopo di che viene considerato un modello di regressione Beta di tipo omoschedastico, analizzanùdo il rapporto tra le variabili regressioni \texttt{batch} e \texttt{temp} rispetto la variabile risposta \texttt{yield}. Il modello è stato adattato 
+ attraverso le istruzioni \texttt{m1<-betareg(yield $\sim$ batch+temp, data=GasolineYield)} con la seguente analisi del \texttt{summary(m1)}. L'output ottenuto della funzione \texttt{summary} è simile a quello degli oggetti \texttt{glm}.
 In particolare troviamo:
 \begin{itemize}
 \item Riepiloghi numerici relativi ai residui pesati standard come \texttt{Min, 1Q, Median, 3Q} e \texttt{Max}. 
@@ -357,21 +364,16 @@ In particolare troviamo:
 \item Il numero di iterazioni del metodo BFGS effettuate per stimare i parametri.
 \end{itemize}
 
-\begin{figure}[h]
-<<eval=TRUE,fig.pos='left'>>=
-library(betareg)
-data("GasolineYield", package = "betareg")
-str(GasolineYield)
+
+<<eval=TRUE>>=
 m1 <- betareg(yield~batch+temp, data=GasolineYield)
 summary(m1)
 @
-\caption{Le 32 osservazioni del dataset \texttt{GasolineYield}. Di seguito il riepilogo del modello di regressione \texttt{m1}.}
-\end{figure}
 Come si può vedere, tutti i coefficienti, compreso quello di precisione, sono significativi in quanto hanno un basso \emph{p-valore}. A confermare l'evidente relazione tra le variabili regressori e la variabile risposta è l'indice $R^2$-adjusted con un valore di \emph{0.9617}.
 
 Come per gli oggetti della classe \texttt{glm}, attraverso la funzione \texttt{plot} è possibile visualizzare i grafici diagnostici.
-\begin{figure}[h]
-<<eval=TRUE,fig.pos='left'>>=
+
+<<eval=TRUE>>=
 par(pty="s",cex.axis=1.3,cex.lab=1.3, mar=c(5,3,1.5,1))
 layout(matrix(c(1:7,7,7),byrow=TRUE,nrow=3))
 plot(m1, which = 1, type = "pearson", sub.caption = "")
@@ -383,23 +385,23 @@ plot(m1, which = 6, type = "pearson", sub.caption = "")
 par(pty="m")
 plot(m1, which = 2)
 @
-\caption{Nella prima parte i comandi R utilizzati per avere i plot diagnostici, immediatamente a seguire gli stessi. }
-\end{figure}
+Analizzando il plot rappresentante le \emph{distanze di Cook}, si può notare che la quarta osservazione ha il valore più alto rispetto tutte le altre e supera il valore \emph{0.5}. Andrebbe dunque considerata una versione del modello, stimato sugli stessi punti del modello \texttt{m1}, omettendo la quarta osservazione.
+<<eval=TRUE>>=
+m2 <- betareg(yield~batch+temp, data=GasolineYield,subset=-4)
+summary(m2)
+@
+Omettendo la quarta osservazione è possibile notare una diminuzione della varianza ovvero un aumento del coefficiente di precisione da $\hat{\phi}_{m1}=$440.27 a $\hat{\phi}_{m2}=$557.79.
 
-\subsection{Esempio 2: Spese domestiche per gli alimenti}
-Consideriamo un secondo esempio sempre nell'ambito betareg che consiste nel trovare la dipendenza della variabile dipendente \texttt{food\ income} la proporzione di redditto che ogni famiglia spende nell'acquisto degli alimenti. Le variabili regressori sono: la variabile numerica \texttt{persons} componenti della famiglia e ovviamente la variabile \texttt{income} totale di tutte le entrate della famiglia. Visualizziamo le variabili
+Consideriamo ora un nuovo modello, dove andiamo ad esplicitare il coefficiente di precisione. In particolare utilizzeremo come parametro di precisione la variabile esplicativa \texttt{temp}.
 
-%
-%<<eval=TRUE>>=
-%data("FoodExpenditure",package = "betareg")
-%plot(I(food/income) ~ income, data = FoodExpenditure, xlab = "income", 
-%     ylab = "food/income", main = "Spese per alimenti", type = "n", ylim = c(0.04, 0.57))
-%points(I(food/income) ~ income, data = FoodExpenditure, cex = 1.75, pch = 19, col =(c%("indianred4","lightpink2","indianred","lightpink3","lightpink1","lavenderblush1","floralwhite"))[persons])
-%points(I(food/income) ~ income, data = FoodExpenditure, cex = 1.75)
-%legend("topright", rev(as.character(sort(unique(FoodExpenditure$persons)))), title = "persons", col =(c("indianred4","lightpink2","indianred","lightpink3","lightpink1","lavenderblush1","floralwhite")), pch = 19, bty = "n")
-%legend("topright", rev(as.character(sort(unique(FoodExpenditure$persons)))), title = "persons", pch = 1, bty = "n")
-%@
-\includegraphics[scale=0.5]{Spese}
+<<eval=TRUE>>=
+m3 <- betareg(yield~batch+temp | temp, data=GasolineYield)
+summary(m3)
+@
+Non avendo esplicitato alcuna funzione di collegamento per $g_2(\cdot)$, è stata utilizzata quella di default, ovvero quella di tipo logaritmico.
+ 
+
+
 
 \clearpage
 \tableofcontents
