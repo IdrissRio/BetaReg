@@ -7,7 +7,6 @@
 \xdefinecolor{gray}{rgb}{0.4,0.4,0.4}
 \xdefinecolor{blue}{RGB}{58,95,205}% R's royalblue3; #3A5FCD
 \usepackage{float}
-
 \lstset{% setup listings
 	language=R,% set programming language
 	basicstyle=\ttfamily\small,% basic font style
@@ -395,28 +394,61 @@ Omettendo la quarta osservazione è possibile notare una diminuzione della varia
 Consideriamo ora un nuovo modello, dove andiamo ad esplicitare il coefficiente di precisione. In particolare utilizzeremo come parametro di precisione la variabile esplicativa \texttt{temp}.
 
 <<eval=TRUE>>=
-m3 <- betareg(yield~batch+temp | temp, data=GasolineYield)
-summary(m3)
+m1.eteroske <- betareg(yield~batch+temp | temp, data=GasolineYield)
+summary(m1.eteroske)
 @
 Non avendo esplicitato alcuna funzione di collegamento per $g_2(\cdot)$, è stata utilizzata quella di default, ovvero quella di tipo logaritmico.
+Attraverso la funzione \texttt{lmtest::lrtest} è possibile effettuare un confronto tra il modello \texttt{m1.eteroske} e \texttt{m1} utilizzando il test di ratio-verosimiglianza. 
+<<eval=TRUE>>=
+lmtest::lrtest(m1,m1.eteroske)
+@
+Il p-value (<0.5) è un evidenza contro l'omoschedasticità del modello \texttt{m1}, ovvero viene rifiutata l'ipotesi nulla che $g_2(\cdot)$ sia costante.
+Un'ulteriore test che confermi il fatto che il parametro $\phi$ non sia costante è dato dal test di Wald:
+<<eval=TRUE>>=
+lmtest::waldtest(m1,m1.eteroske)
+@
+Si noti che anche in questo caso il p-value suggerisce il rigetto dell'ipotesi nulla.
 
- 
+Consideriamo ora un modello omoschedastico simile a \texttt{m1}, con funzione di collegamento per la media \texttt{probit}:
+<<eval=TRUE>>=
+m1.probit<-betareg(yield~batch+temp, link="probit", data=GasolineYield)
+summary(m1.probit)
+@
+Si può notare un leggero incremento del coefficiente del parametro $\phi$ e dell'indice $R^2$-adjusted.
+<<eval=TRUE>>=
+summary(m1.probit)$pseudo.r.squared-summary(m1)$pseudo.r.squared
+AIC(m1,m1.probit)
+BIC(m1,m1.probit)
+@
+Si può notare che l'utilizzo di una funzione di collemento diversa da quella standard porta a miglioramenti poco significativi. Il risultato dell'AIC e della differenza tra i due indici $R^{2}$-adjusted ne danno conferma.
 
+In fine verrà considerato un modello in cui viene utilizzata la funzione di collegamento \texttt{loglog}:
+<<eval=TRUE>>=
+m1.loglog<-betareg(yield~batch+temp, link="loglog", data=GasolineYield)
+summary(m1.loglog)
+@
+Come si può vedere dall'output della funzione \texttt{summary}, sia il coefficiente del parametro di precisione che il l'indice $R^2$-adjusted sono significativamente maggiori rispetto ai modelli analizzati precedentemente.
+<<eval=TRUE>>=
+AIC(m1,m1.eteroske,m1.probit,m1.loglog)
+@
+\hspace{2.5cm}
+\includegraphics[scale=0.3]{gasolinePlot}
 
 \subsection{Esempio 2: Spese domestiche per gli alimenti}
-Consideriamo un secondo esempio sempre nell'ambito betareg che consiste nel trovare la dipendenza della variabile dipendente \texttt{food\ income} la proporzione di redditto che ogni famiglia spende nell'acquisto degli alimenti. Le variabili regressori sono: la variabile numerica \texttt{persons} componenti della famiglia e ovviamente la variabile \texttt{income} totale di tutte le entrate della famiglia. Visualizziamo le variabili
+Consideriamo un secondo esempio sempre nell'ambito betareg che consiste nel trovare la dipendenza della variabile dipendente \texttt{food \ income} la proporzione di redditto che ogni famiglia spende nell'acquisto degli alimenti. Le variabili regressori sono: la variabile numerica \texttt{persons} componenti della famiglia e ovviamente la variabile \texttt{income} totale di tutte le entrate della famiglia. Visualizziamo le variabili
 \includegraphics[scale=0.5]{Spese}
 
 
 \clearpage
 \tableofcontents
-		\begin{thebibliography}{99} 
+	\begin{thebibliography}{9} 
 	\bibitem{2004} \textbf{Beta Regression for Modelling Rates and Proportions.}, Ferrari SLP, Cribari-Neto Francisco (2004).  Journal of Applied Statistics, 31(7), 799–815.
 	\bibitem{CNF} \textbf{Beta Regression in R}, Francisco Cribari-Neto, Achim Zeileis.\\
 	\bibitem{PV} \textbf{Towards multiple linear regression and logistic regression}, Paolo Vidoni, 2017-2018. Lecture 5. Applied Statistics and Data Analysis.
 	\bibitem{BReg2006}\textbf{betareg 1.2} - Simas AB, Rocha (2006). betareg: Beta Regression. R package \\ \texttt{http://CRAN.R-project.org/src/contrib/ Archive/betareg/}.
 	\bibitem{RESIDUAL}\textbf{On Beta Regression Residuals} Espinheira PL, Ferrari SLP, Cribari-Neto F (2008b). Journal
 of Applied Statistics, 35(4), 407–419.
-	\end{thebibliography}
+
+\end{thebibliography}
 
 \end{document}
