@@ -399,8 +399,13 @@ m3 <- betareg(yield~batch+temp | temp, data=GasolineYield)
 summary(m3)
 @
 Non avendo esplicitato alcuna funzione di collegamento per $g_2(\cdot)$, è stata utilizzata quella di default, ovvero quella di tipo logaritmico.
+
  
 
+
+\subsection{Esempio 2: Spese domestiche per gli alimenti}
+Consideriamo un secondo esempio sempre nell'ambito betareg che consiste nel trovare la dipendenza della variabile dipendente \texttt{food\ income} la proporzione di redditto che ogni famiglia spende nell'acquisto degli alimenti. Le variabili regressori sono: la variabile numerica \texttt{persons} componenti della famiglia e ovviamente la variabile \texttt{income} totale di tutte le entrate della famiglia. Visualizziamo le variabili
+\includegraphics[scale=0.5]{Spese}
 
 
 \clearpage
