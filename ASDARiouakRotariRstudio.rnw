@@ -446,38 +446,75 @@ AIC(m1,m1.eteroske,m1.probit,m1.loglog)
 \subsection{Esempio 2: Spese domestiche per gli alimenti}
 Consideriamo un secondo esempio sempre nell'ambito betareg che consiste nel trovare la dipendenza della variabile dipendente \texttt{food\ income} la proporzione di redditto che ogni famiglia spende nell'acquisto degli alimenti. Le variabili regressori sono: la variabile numerica \texttt{persons} componenti della famiglia e ovviamente la variabile \texttt{income} totale di tutte le entrate della famiglia. Visualizziamo le variabili
 
-\hspace{1cm}\includegraphics[scale=0.4]{Spese}
-
 Consideriamo il Modello di regressione lineare per il nostro dataset:
 
 <<eval=TRUE>>=
 data("FoodExpenditure",package = "betareg")
-mod.regressione<-lm(I(food/income) ~ income, data = FoodExpenditure)
+mod.regressione<-lm(I(food/income) ~ income+persons, data = FoodExpenditure)
 @
-\hspace{1cm}\includegraphics[scale=0.48]{lm_es2}\\
 
-Vogliamo vedere se il modello preso in considerazione è eteroschedastico. Per fare la verifica utilizziamo il \textit{Test di Breusch e Pagan} che verificare l'ipotesi di omoschedasticità, applica ai residui gli stessi concetti della regressione lineare. Esso è valido per grandi campioni, assume che gli errori siano indipendenti e normalmente distribuiti e che la loro varianza $\sigma_t ^2$ sia funzione lineare del tempo. Come ipotesi nulla considera la funzione logartimo della varianza definita prima costante. Troviamo questo test nella \texttt{library("lmtest")} con il nome di \texttt{(bptest)} 
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.3]{primo_es2}
+\end{figure}
+
+Insieme al grafico che riproduce la fitted curve del modello di regressione lineare abbiamo eseguito anche uno dei grafici diagnostici per poter controllare la varianza tramite il plot dei fitted values e la radice del valore assoluto dei residui standardizzati utilizzando \texttt{which=3}. A prima vista la varianza non appare costante per poterlo confermare eseguiamo dei test.
+
+
+Vogliamo vedere se il modello preso in considerazione è eteroschedastico. Per fare la verifica utilizziamo il \textit{Test di Breusch e Pagan} che verificare l'ipotesi di omoschedasticità, applica ai residui gli stessi concetti della regressione lineare. Esso è valido per grandi campioni, assume che gli errori siano indipendenti e normalmente distribuiti e che la loro varianza $\sigma_t ^2$ sia funzione lineare del tempo. Come ipotesi nulla, considera la funzione logartimo della varianza definita prima, costante. Troviamo questo test nella \texttt{library("lmtest")} con il nome di \texttt{(bptest)} 
 
 <<eval=TRUE>>=
 library("lmtest")
 bptest(mod.regressione)
 @
 
-Possiamo vedere dal p-value che l'ipotesi nulla viene rifiuta, concludiamo che il nostro modello è eteroschedastico, quindi il modello di beta regressione è più appropriato. Usiamo come funzione di collegamento quella di default
+Possiamo vedere dal p-value che l'ipotesi nulla viene rifiuta, in favore di una varianza non costante. Concludiamo che il nostro modello è eteroschedastico, quindi il modello di beta regressione è più appropriato. Usiamo come funzione di collegamento quella di default 
 <<eval=TRUE>>=
 library("betareg")
 data("FoodExpenditure",package = "betareg")
-beta_regressione<-betareg(I(food/income) ~ income, data = FoodExpenditure)
+beta_regressione<-betareg(I(food/income) ~ income+persons, data = FoodExpenditure)
 summary(beta_regressione)
 @
-\hspace{1cm}\includegraphics[scale=0.55]{lm_beta}\\
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.3]{secondo_es2}
+\end{figure}
 
-Mettendo a confronto entrambi i modelli possiamo vedere che in realtà non differiscono molto. Le fitted curves differiscono di poco una dall'altra. 
-Da entrambi i modelli possiamo concludere che la percentuale
+Mettendo a confronto entrambi i modelli possiamo vedere che in realtà non differiscono molto. Le fitted curves differiscono poco una dall'altra ciò significa che i modelli resistituiscono risultati simili. 
+Da entrambi possiamo concludere che la percentuale è più elevata per famiglie a poco reddito significa che la spesa per gli alimenti incide notevolmente sul budget famigliare. La percentuale del reddito  speso per gli alimenti scende all'aumentare del reddito delle famiglie,cioè la spesa incide meno sul budget famigliare. La spesa aumenta inoltre all'aumentare dei componenti delle famiglie. Ma questo aumento non viene catturato bene dal modello beta in questo caso. Decidiamo quindi di aggiungere la variabile \texttt{persons} come variabile regressore aggiuntiva nell'equazione di precisione. Consideriamo quindi un modello con variabile di dispersione.
+
+<<eval=TRUE>>=
+library("betareg")
+data("FoodExpenditure",package = "betareg")
+beta_regressione_persons<-betareg(I(food/income) ~ income+persons|persons, 
+                                  data = FoodExpenditure)
+@
+
+Mettiamo subito a confronto i due modelli tramite \texttt{lrtest}
+
+<<eval=TRUE>>=
+library("lmtest")
+lrtest(beta_regressione,beta_regressione_persons)
+AIC(beta_regressione,beta_regressione_persons)
+BIC(beta_regressione,beta_regressione_persons)
+@
+
+Troviamo un evidente miglioramento nel modello con dispersione da entrambi gli indici AIC e BIC.
+
+Fino ad ora abbiamo considerato come funzione di collegamento \texttt{logit}, vogliamo vedere se avviene con cambiamento utilizzando le altre funzioni di collegamento, e lo possiamo fare mettendole a confronto tutte insieme
+
+<<eval=TRUE>>=
+sapply(c("logit","probit","cloglog","cauchit","loglog"),
+       function(x)logLik(update(beta_regressione_persons,link=x)))
+@
+Notiamo che le funzione di collegamento hanno un effetto molto simile, l'unica che si distingue leggermente e la \texttt{"cauchit"} con un valore leggermente più alto. Vediamo le fitted curves graficamente
 
 
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.3]{fine_es2}
+\end{figure}
 
-la percentuale del reddito delle famiglie speso in cibo diminuisce con il livello di reddito complessivo ma aumenta nel numero di persone nella famiglia
 
 
 
