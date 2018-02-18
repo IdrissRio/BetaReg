@@ -435,8 +435,41 @@ AIC(m1,m1.eteroske,m1.probit,m1.loglog)
 \includegraphics[scale=0.3]{gasolinePlot}
 
 \subsection{Esempio 2: Spese domestiche per gli alimenti}
-Consideriamo un secondo esempio sempre nell'ambito betareg che consiste nel trovare la dipendenza della variabile dipendente \texttt{food \ income} la proporzione di redditto che ogni famiglia spende nell'acquisto degli alimenti. Le variabili regressori sono: la variabile numerica \texttt{persons} componenti della famiglia e ovviamente la variabile \texttt{income} totale di tutte le entrate della famiglia. Visualizziamo le variabili
-\includegraphics[scale=0.5]{Spese}
+Consideriamo un secondo esempio sempre nell'ambito betareg che consiste nel trovare la dipendenza della variabile dipendente \texttt{food\ income} la proporzione di redditto che ogni famiglia spende nell'acquisto degli alimenti. Le variabili regressori sono: la variabile numerica \texttt{persons} componenti della famiglia e ovviamente la variabile \texttt{income} totale di tutte le entrate della famiglia. Visualizziamo le variabili
+
+\hspace{1cm}\includegraphics[scale=0.4]{Spese}
+
+Consideriamo il Modello di regressione lineare per il nostro dataset:
+
+<<eval=TRUE>>=
+data("FoodExpenditure",package = "betareg")
+mod.regressione<-lm(I(food/income) ~ income, data = FoodExpenditure)
+@
+\hspace{1cm}\includegraphics[scale=0.48]{lm_es2}\\
+
+Vogliamo vedere se il modello preso in considerazione è eteroschedastico. Per fare la verifica utilizziamo il \textit{Test di Breusch e Pagan} che verificare l'ipotesi di omoschedasticità, applica ai residui gli stessi concetti della regressione lineare. Esso è valido per grandi campioni, assume che gli errori siano indipendenti e normalmente distribuiti e che la loro varianza $\sigma_t ^2$ sia funzione lineare del tempo. Come ipotesi nulla considera la funzione logartimo della varianza definita prima costante. Troviamo questo test nella \texttt{library("lmtest")} con il nome di \texttt{(bptest)} 
+
+<<eval=TRUE>>=
+library("lmtest")
+bptest(mod.regressione)
+@
+
+Possiamo vedere dal p-value che l'ipotesi nulla viene rifiuta, concludiamo che il nostro modello è eteroschedastico, quindi il modello di beta regressione è più appropriato. Usiamo come funzione di collegamento quella di default
+<<eval=TRUE>>=
+library("betareg")
+data("FoodExpenditure",package = "betareg")
+beta_regressione<-betareg(I(food/income) ~ income, data = FoodExpenditure)
+summary(beta_regressione)
+@
+\hspace{1cm}\includegraphics[scale=0.55]{lm_beta}\\
+
+Mettendo a confronto entrambi i modelli possiamo vedere che in realtà non differiscono molto. Le fitted curves differiscono di poco una dall'altra. 
+Da entrambi i modelli possiamo concludere che la percentuale
+
+
+
+la percentuale del reddito delle famiglie speso in cibo diminuisce con il livello di reddito complessivo ma aumenta nel numero di persone nella famiglia
+
 
 
 \clearpage
