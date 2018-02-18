@@ -296,7 +296,23 @@ Nel listing \ref{lst:signature} viene data la \emph{signature} della funzione di
 	\item \texttt{control}: prende come parametro un oggetto di tipo \texttt{betareg.control}.
 	\item \texttt{model, x, y}: argomenti di tipo logico (\texttt{TRUE, FALSE}). Se impostati a  \texttt{TRUE}, vengono restituiti il \emph{model.frame, model matrix} e il \emph{vettore della variabile risposta} rispettivamente.
 \end{itemize}
-
+L'opzione \texttt{control} prende come parametro un oggetto di tipo \texttt{betareg.control}. Tali oggetti servono per controlare la modalità con la quale veogno stimati i coefficienti del modello.
+\begin{lstlisting}
+betareg.control(phi = TRUE, method = "BFGS", maxit = 5000,
+      hessian = FALSE, trace = FALSE, start = NULL,
+      fsmaxit = 200, fstol = 1e-8, ...)
+\end{lstlisting}
+Di seguito una descrizione di tali opzioni:
+\begin{itemize}
+  \item \texttt{phi}: valore booleano. Indica se il parametro $\phi$ deve essere trattato come un parametro del modello o come un parametro di disturbo.
+  \item \texttt{method}: specifica quale metodo numerico viene utilizzato per stimare i coefficienti. Il valore di default è \texttt{BFGS}.
+  \item \texttt{maxit}: indica il numero massimo di iterate da eseguire.
+  \item \texttt{trace:} valore booleno. Indica se deve essere mantenuta traccia delle iterazioni effettuate durante la stima dei coefficienti.
+  \item \texttt{hessian:} valore booleano. Indica se deve essere utilizzato l'Hessiano per stimare la matrice delle covariate. L'opzione di default è \texttt{FALSE}.
+  \item \texttt{start:} un vettore di valori opzionali che indica quali sono in punti di partenza per stimare i coefficienti del modello. Si veda la sezione \texttt{III.i}.
+  \item \texttt{fsmaxit:} valore intero. Indica il numero massimo delle iterazioni del \textit{punteggio di Fisher}.
+  \item \texttt{fstol:} valore numerico. Indica la tolleranza dell'errore per raggiungere la convergenza.
+\end{itemize}
 
 L'oggetto restituito dal modello stimato della classe \texttt{betareg} è una lista simile a quella restituita dagli oggetti \texttt{glm}, dove troviamo \texttt{coefficients} e \texttt{terms}. E' possibile interrogare gli oggetti della classe \texttt{betareg} attraverso la funzione \texttt{summary()}. Nella tabella \ref{MethodTable}, è stata riporta una lista dei metodi e delle funzioni offerte dagli oggetti della classe \texttt{betareg}. 
 
