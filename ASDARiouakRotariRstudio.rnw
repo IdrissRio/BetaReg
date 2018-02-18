@@ -276,6 +276,7 @@ $$Lim_{sx}=\bigg[ g^{-1}\bigg(\hat{\eta} -\Phi^{-1}\Big(\frac{1-\alpha}{2}\Big)S
 mentre
 $$ Lim_{dx}=\bigg[ g^{-1}\bigg(\hat{\eta} +\Phi^{-1}\Big(\frac{1-\alpha}{2}\Big)SE(\hat{\eta})\bigg)  \bigg], $$
 con $\hat{\eta}=x_0^t \hat{\beta}$ e $SE(\hat{\eta})=\sqrt{x_0^t \widehat{\text{Cov}}(\hat{\beta})x_0}$ dove $\widehat{\text{Cov}}(\hat{\beta})$ è ottenuto dall'inversa della matrice di \emph{Fisher} \eqref{eq:Fisher} valutata negli MLEs escludendo la riga e la colonna relative al parametro di precisione $\hat{\phi}$.
+
 \newpage
 \onecolumn
 \section{Pacchetto Betareg}
@@ -337,6 +338,9 @@ Di seguito un esempio per fissare le idee: consideriamo la seguente \texttt{form
 in questo caso abbiamo la stessa formulazione dell'equazione \eqref{eq:mean} mentre per l'equazione \eqref{eq:precisione} $\phi_i$ non è più costante. I regressori $z_i$ vengo presi dalla \texttt{$z_1+z_2+z_3$}, alla funzione di collegamento viene assegnata la funzione logaritmo cioè $g_2(\cdot)=log(\cdot).$
 \section{Esempi implementativi}
 Nella seguente sezione verranno analizzati e commentati due esempi di dataset presenti del pacchetto \texttt{betareg}.
+
+\subsection{Estenzioni}
+Nel (2010) Simas \cite{2010} estende il modello di regressione beta considerando le equazioni $(3)$ e $(4)$ non lineari. Oltre a queste sono ottenute le correzioni analitiche della bias per gli stimatori ML dei parametri, ciò generalizza i risultati ottenuti da Ospina Cribari-Neto nel (2006) \cite{2006} delle correzioni bias per il modello di regressione senza variabile di dispersione. Il pacchetto \texttt{betareg} non contiene ancora quest'entzione. 
 \subsection{Esempio: gasoline}
 Nella seguente sezione verrà considerato un esempio a scopo illustrativo. L'insieme di dati preso in considerazione è relativo alla quota di petrolio greggio trasformato in benzina dopo la distillazione. Le variabili presenti nel dataset sono:
 \begin{itemize}
@@ -529,6 +533,8 @@ Notiamo che le funzione di collegamento hanno un effetto molto simile, l'unica c
 	\bibitem{CNF} \textbf{Beta Regression in R}, Francisco Cribari-Neto, Achim Zeileis.\\
 	\bibitem{PV} \textbf{Towards multiple linear regression and logistic regression}, Paolo Vidoni, 2017-2018. Lecture 5. Applied Statistics and Data Analysis.
 	\bibitem{BReg2006}\textbf{betareg 1.2} - Simas AB, Rocha (2006). betareg: Beta Regression. R package \\ \texttt{http://CRAN.R-project.org/src/contrib/ Archive/betareg/}.
+	\bibitem{2010}\textbf{Improved Estimators for a General Class of Beta Regression Models.}-Simas AB, Barreto-Souza W, Rocha AV (2010)  Computational Statistics & Data Analysis, 54(2), 348–366. 
+	\bibitem{2006} \textbf{“Improved Point and Interval Estimation for a Beta Regression Model.”} -Ospina R, Cribari-Neto F, Vasconcellos KLP (2006).Computational Statistics & Data Analysis, 51(2), 960–981.
 	\bibitem{RESIDUAL}\textbf{On Beta Regression Residuals} Espinheira PL, Ferrari SLP, Cribari-Neto F (2008b). Journal
 of Applied Statistics, 35(4), 407–419.
 \end{thebibliography}
