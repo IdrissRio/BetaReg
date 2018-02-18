@@ -165,11 +165,11 @@
 	\mu&=\frac{p}{p+q} \ , & \phi=p+q
 	\end{align*}
 	dove $0<\mu<1$, $\phi >0 $ e $0<y<1$. 
-		\begin{figure}[h]
-		\hspace*{-0.5cm}
-		\includegraphics[scale=.3]{Beta}
-		\caption{Rappresentazione grafica della distribuzione Beta, utilizzando il comando R: \emph{dbeta}.}
-	\end{figure}
+		\begin{figure*}[ht]
+		\centering
+		\includegraphics[scale=.5]{BetaDistribution}
+		\caption{Rappresentazione grafica della distribuzione Beta, utilizzando il comando R: \emph{dbeta2}.}
+	\end{figure*}
 	
 	
 	
@@ -427,12 +427,21 @@ In fine verrà considerato un modello in cui viene utilizzata la funzione di col
 m1.loglog<-betareg(yield~batch+temp, link="loglog", data=GasolineYield)
 summary(m1.loglog)
 @
-Come si può vedere dall'output della funzione \texttt{summary}, sia il coefficiente del parametro di precisione che il l'indice $R^2$-adjusted sono significativamente maggiori rispetto ai modelli analizzati precedentemente.
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.3]{LogLogFittedValue}
+\caption{In \color{red} rosso \color{black} i punti stimati dal modello \texttt{m1.loglog} (-). In \color{blue} blu \color{black} i \texttt{segments} rappresentanti i valori residui. }
+\end{figure}
+Come si può vedere dall'output della funzione \texttt{summary}, sia il coefficiente del parametro di precisione che il l'indice $R^2$-adjusted sono significativamente maggiori rispetto ai modelli analizzati precedentemente. Un ulteriore conferma è data dall'indice AIC.
 <<eval=TRUE>>=
 AIC(m1,m1.eteroske,m1.probit,m1.loglog)
 @
-\hspace{2.5cm}
-\includegraphics[scale=0.3]{gasolinePlot}
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.3]{gasolinePlot3}
+\caption{Nel seguente plot sono riportate le \emph{fitted curves}: in \color{red} rosso \color{black} il modello \texttt{m1.loglog}, in \color{blue}blu\color{black} il modello \texttt{m1} ed in fine il modello \texttt(m1.probit) in \color{gray} grigio. \color{black}}
+\end{figure}
+
 
 \subsection{Esempio 2: Spese domestiche per gli alimenti}
 Consideriamo un secondo esempio sempre nell'ambito betareg che consiste nel trovare la dipendenza della variabile dipendente \texttt{food\ income} la proporzione di redditto che ogni famiglia spende nell'acquisto degli alimenti. Le variabili regressori sono: la variabile numerica \texttt{persons} componenti della famiglia e ovviamente la variabile \texttt{income} totale di tutte le entrate della famiglia. Visualizziamo le variabili
