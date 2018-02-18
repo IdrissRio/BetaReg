@@ -111,7 +111,7 @@
 
 \pretitle{\begin{center}\Huge\bfseries} 
 	\posttitle{\end{center}} 
-\title{BetaReg: pacchetto R} 
+\title{Un pacchetto R: betareg} 
 \author{
 	\textsc{Marta Rotari - Idriss Riouak} \\[1ex] 
 	\normalsize Università degli studi di Udine \\ 
@@ -123,8 +123,8 @@
 \date{\today} 
 \renewcommand{\maketitlehookd}{%
 	\begin{abstract}
-		\noindent  La regressione è un metodo statistico che permette l'analisi delle relazioni che intercorrono tra due variabili che possono assumere valori nel continuo o nel discreto. Lo scopo di questa relazione è quello di studiare e analizzare un modello di regressione nel quale il dominio delle variabili di risposta possono assumere valori nell'intervallo limitato $(0,1)$.
-		Il modello analizzato è chiamato modello di regressione con variabili di risposta Beta, introdotto per la prima volta nel 2004 da Cribari-Neto e Ferrari \cite{2004}. In particolare andremo ad analizzare l'implementazione in \emph{R} del modello, evidenziandone i pregi e difetti.
+		\noindent  La regressione permette l'analisi delle relazioni che intercorrono tra due variabili che possono assumere valori nel continuo o nel discreto. Lo scopo di questa relazione è quello di studiare e analizzare un modello di regressione nel quale il dominio delle variabili di risposta possono assumere valori nell'intervallo limitato $(0,1)$.
+		Il modello analizzato è chiamato modello di regressione con variabili di risposta Beta, introdotto per la prima volta nel 2004 da Cribari-Neto e Ferrari \cite{2004}. In particolare andremo ad analizzare l'implementazione in \emph{R} del modello, analizzando il pacchetto \texttt{betareg}.
 	\end{abstract}
 }
 
@@ -135,7 +135,7 @@
 	\maketitle
 	
 	\section{Introduzione}
-	Un modello di regressione è un modello statistico, il cui scopo è sia quello di studiare ed analizzare le relazioni tra una una variabile \emph{dipendente}, detta variabile di risposta, e una o più variabili \emph{indipendenti}, dette variabili esplicative, che di effettuare predizioni dato un nuovo valore per la variabile esplicativa.
+	Un modello di regressione è un modello statistico, il cui scopo è sia quello di studiare ed analizzare le relazioni tra una una variabile \emph{dipendente} ($y$), detta variabile di risposta, e una o più variabili \emph{indipendenti} ($x$), dette variabili regressori, e anche quello di effettuare predizioni dato un nuovo valore per la variabile $x$.
 	
 	Il \emph{modello di regressione lineare semplice} ha la seguente forma
 	\begin{equation}\label{eq:lrm}
@@ -143,13 +143,13 @@
 	\end{equation}
 
 	dove la componente casuale $\varepsilon_i$ è normalmente distribuita con media zero e varianza $\sigma^2$.
-	Tale modello è ampiamente utilizzato in svariate applicazione, tuttavia non è appropriato per situazioni dove la variabile risposta è limitata ad assumere valori in un intervallo $(0,1)$, in quanto, i valori stimati potrebbero eccedere tale intervallo \footnote{Un esempio classico è <<Teaching Program>>\cite{PV}(pg. 67)}. Per ovviare a questo problema, prima dell'avvento del modello di regressione con variabili \textit{Beta}, la variabile di risposta $y$ veniva trasformata per poter assumere valori in$\mathbb{R}$, per esempio applicando$\tilde{y}=log(\frac{y}{1-y})$ alla quale veniva applicato il modello di regressione lineare semplice. Ma tale approccio presentava alcune problematiche come: I parametri venivano interpretati rispetto a $E[\tilde{y}]$ anziché rispetto a $E[y]$; le variabili casuali con valori nell'intervallo unitario sono tipicamente eteroschedastiche che causano la mancanza di alcune ipotesi fondamentali nel modello di regressione lineare (la varianza aumentava all'avvicinarsi della media e decresceva spostandosi verso i limiti dell'intervallo) ed infine l'asimmetria della distribuzione di tassi e di proporzioni dunque la stima degli intervalli per il test dell'ipotesi basate su approssimazioni Gaussiane portavano a grosse imprecisioni sopratutto in campioni di piccole dimensioni.
+	Tale modello è ampiamente utilizzato in svariate applicazione, tuttavia non è appropriato per situazioni in cui la variabile risposta è limitata ad assumere valori in un intervallo $(0,1)$, in quanto, i valori stimati potrebbero eccedere tale intervallo\footnote{Un esempio classico è <<Teaching Program>>\cite{PV}(pg. 67)}. Per ovviare a tale problema, prima dell'avvento del modello di regressione con variabili \textit{Beta}, la variabile di risposta $y$ veniva trasformata per poter assumere valori in $\mathbb{R}$, per esempio applicando la seguente trasformazione $\tilde{y}=log(\frac{y}{1-y})$ alla quale veniva applicato il modello di regressione lineare semplice. Ma tale approccio presentava alcune problematiche come: interpretare i parametri rispetto a $E[\tilde{y}]$ anziché rispetto a $E[y]$; le variabili casuali con valori nell'intervallo unitario sono tipicamente eteroschedastiche che causano la mancanza di alcune ipotesi fondamentali nel modello di regressione lineare (la varianza aumenta all'avvicinarsi della media e decresce spostandosi verso i limiti dell'intervallo) ed infine l'asimmetria della distribuzione dei tassi e delle proporzioni dunque la stima degli intervalli per il test dell'ipotesi basate su approssimazioni Gaussiane portavano a grosse imprecisioni sopratutto in campioni di piccole dimensioni.
 
-	Nel 2004, Cribari-Neto e Ferrari, con l'articolo \emph{"Beta Regression for Modelling Rates and Proportions"} \cite{2004}, propongono un nuovo modello di regressione per variabili continue con valori in $(0,1)$ come possono essere proporzioni e tassi, assumendo che la variabile risposta sia beta-distribuita. Successivamente nel 2016, nell'articolo \emph{``Beta Regression in R''} \cite{CNF}, i due autori forniscono un'implementazione in R di tale modello.
+	Nel 2004, Cribari-Neto e Ferrari, con l'articolo \emph{"Beta Regression for Modelling Rates and Proportions"} \cite{2004}, propongono un nuovo modello di regressione per variabili continue con valori in $(0,1)$, come possono essere proporzioni e tassi, assumendo che la variabile risposta sia beta-distribuita. Successivamente nel 2016, nell'articolo \emph{``Beta Regression in R''} \cite{CNF}, i due autori forniscono un'implementazione in R di tale modello.
 	
 	\section{Beta distribuzione}
 	Come già anticipato, il modello di regressione Beta si basa sull'ipotesi che la variabile risposta $y$ sia \textit{beta}-distribuita.
-	La distribuzione Beta e una distribuzione di probabilità continua definita da due parametri $p$ e $q$ sul''intervallo unitario $[0,1]$. \footnote{Si noti che se la variabile $y$ dovesse assumere valori nell'intervallo $(a,b)$, dove $a < b$ e siano valori noti, allora è possibile modellare $\frac{y-a}{b-a}$ al posto di $y$. Mentre se la variabile $y$ dovesse assumere come valori in [0,1], una possibile trasformazione potrebbe essere $\frac{y\cdot (n-1) \cdot 0.5}{n}$ dove $n$ è la grandezza del campione.} Questa distribuzione governa la probabilità $p$ di un Processo di Bernoulli a posteriori dell'osservazione di $\alpha -1$ successi e $\beta -1$ insuccessi quando $p$  è a priori distribuita uniformemente tra $0$ e $1$. 
+	La distribuzione Beta e una distribuzione di probabilità continua definita da due parametri $p$ e $q$ sul''intervallo unitario $[0,1]$\footnote{Si noti che se la variabile $y$ dovesse assumere valori nell'intervallo $(a,b)$, dove $a < b$ e siano valori noti, allora è possibile modellare $\frac{y-a}{b-a}$ al posto di $y$. Mentre se la variabile $y$ dovesse assumere come valori in [0,1], una possibile trasformazione potrebbe essere $\frac{y\cdot (n-1) \cdot 0.5}{n}$ dove $n$ è la grandezza del campione.}. Questa distribuzione governa la probabilità $p$ di un processo di Bernoulli a posteriori dell'osservazione di $\alpha -1$ successi e $\beta -1$ insuccessi quando $p$  è a priori distribuita uniformemente tra $0$ e $1$. 
 	
 	La funzione densità di probabilità di una variabile casuale beta è data nel seguente modo:
 	$$f(y;p,q)=\frac{\Gamma(p+q)}{\Gamma(p)\Gamma(q)}y^{p-1}(1-y)^{q-1},\ \ \ \ 0 <y<1$$ 
@@ -159,7 +159,7 @@
 
 	$$
 		\hspace{-4mm}
-	f(y,\mu,\phi)=\frac{\Gamma{\phi}}{\Gamma(\mu\phi)\Gamma((1-\mu)\phi)}y^{\mu\phi^{-1}}(1-y)^{(1-\mu)\phi-1} $$
+	f(y;\mu,\phi)=\frac{\Gamma({\phi})}{\Gamma(\mu\phi)\Gamma((1-\mu)\phi)}y^{\mu\phi{-1}}(1-y)^{(1-\mu)\phi-1} $$
 	con 
 	\begin{align*}
 	\mu&=\frac{p}{p+q} \ , & \phi=p+q
@@ -173,7 +173,7 @@
 	
 	
 	
-	Denoteremo con $y \sim \mathbb{\mathcal{B}}(\mu,\phi)$ se  la v.c. $y$ segue una beta distribuzione con parametri $\mu$ e $\phi$. Si noti che $p=\mu\phi$ e $q=\phi(1-\mu)$, da cui segue che $$E(y)=\mu \ \ e \ \ V(y)=\frac{V(\mu)}{1+\phi}=\frac{\mu(1-\mu)}{1+\phi}$$. 
+	Denoteremo con $y \sim \mathbb{\mathcal{B}}(\mu,\phi)$ se  la v.c. $y$ segue una beta distribuzione con parametri $\mu$ e $\phi$. Si noti che $p=\mu\phi$ e $q=\phi(1-\mu)$, da cui segue che $$E(y)=\mu \ \ e \ \ V(y)=\frac{V(\mu)}{1+\phi}=\frac{\mu(1-\mu)}{1+\phi}.$$ 
 	
 	Il parametro $\phi$ è anche chiamato \emph{parametro di precisione}, in quanto per $\mu$ fissato, all'aumentare di $\phi$ diminuisce il valore della varianza.
 
@@ -182,58 +182,60 @@ Sia $y_1, y_2, ... ,y_n$ un campionamento casuale tale che $\forall_{i=1}^n: y_i
 \begin{equation}g(\mu_i)=x_i^t\beta=\eta_i
 \label{eq:mui}
 \end{equation}
-dove $\beta=(\beta_1, \beta_2, ..., \beta_k)^t$, con $k<n$, è un vettore $k \times 1$, $x_i=(x_{i1}, x_{i2},...,x_{ik})^t$ è un vettore di $k$ variabili esplicative, per convenzione $x_{i1}=1$ in tal modo ogni modello ha l'intercetta; mentre $\eta_i=\beta_1x_{i1}+...+\beta_kx_{ik}$ è un predittore lineare. Infine $g(\cdot):(0,1)\rightarrow\mathbb{R} \in \mathcal{C}^2$ è una funzione  di collegamento avente derivata seconda costante. Le funzioni di collegamento più utilizzate sono:
+dove $\beta=(\beta_1, \beta_2, ..., \beta_k)^t$, con $k<n$, è un vettore $k \times 1$, $x_i=(x_{i1}, x_{i2},...,x_{ik})^t$ è un vettore di $k$ variabili esplicative, per convenzione $x_{i1}=1$ in tal modo ogni modello ha l'intercetta; mentre $\eta_i=\beta_1x_{i1}+...+\beta_kx_{ik}$ è un predittore lineare. Infine $g(\cdot):(0,1)\rightarrow\mathbb{R}$ è una funzione $\mathcal{C}^2$, detta funzione di collegamento, avente derivata seconda costante. Le funzioni di collegamento più utilizzate sono:
 %%FIX-ME: Aggiungere commenti e dettagliare le funzioni di collegamento.
 \begin{itemize}
 	\item \textbf{logit:} $g(\mu)=log(\frac{\mu}{(1-\mu)}) $
-	\item \textbf{probit:} $g(\mu)=\varPhi^{-1}(\mu)$, dove $\varPhi(\cdot)$ è la funzioni di distribuzione normale.
+	\item \textbf{probit:} $g(\mu)=\varPhi^{-1}(\mu)$, dove $\varPhi(\cdot)$ è la funzioni di distribuzione normale standard.
 	\item \textbf{log-log complementare:}\\ $g(\mu)=\log(-\log(1-\mu))$
-	\item \textbf{log-log:}$g(\mu)=\log(-\log(\mu))$
+	\item \textbf{log-log:} $g(\mu)=\log(-\log(\mu))$
 	\item \textbf{Cauchy:} $g(\mu)=\tan(\pi(\mu-0.5))$
 \end{itemize}
 
-Denotiamo con $l(\beta,\phi)=\sum_{i=1}^{n}l_i(\mu_i,\phi)$ la funzione di verso somiglianza, dove 
+Denotiamo con $l(\beta,\phi)=\sum_{i=1}^{n}l_i(\mu_i,\phi)$ la funzione di verosimiglianza, dove 
 \begin{align*}
-l_i(\mu_i, \phi)=&\log \Gamma(\phi)-\log (\mu_i\phi)\\
+l_i(\mu_i, \phi)=&\log \Gamma(\phi)-\log \Gamma(\mu_i\phi)\\
 &-\log\Gamma((1-\mu_i)\phi)+(\mu_i\phi-1)\log y_i \\&
 +  \{(1-\mu_i)\phi -1 \}\log(1-y_i)
 \end{align*}
 con $\mu_i$ definito come nell'equazione \eqref{eq:mui} ovvero $\mu_i=g^{-1}(x_i^t\beta)$.
 
-Nel 2010 è stata formulata un'estensione del modello a dispersione variabile considerando il parametro di precisione non più costante per tutte le osservazioni ma modellato come parametro della media. Le osservazioni $y_i \sim \mathbb{\mathcal{B}}(\mu_i, \phi_i)$ indipendenti con 
+Nel 2010 è stata formulata un'estensione del modello a dispersione variabile considerando il parametro di precisione non più costante per tutte le osservazioni ma modellato come parametro della media. Le osservazioni diventano  $y_i \sim \mathbb{\mathcal{B}}(\mu_i, \phi_i)$ indipendenti con 
 \begin{align}
 g_1(\mu_i)&=\eta_{1i}=x{_i}^T \beta, \label{eq:mean}\\
 g_2(\phi_i)&=\eta_{2i}=z{_i}^T \gamma, \label{eq:precisione}
 \end{align}
-con $\beta=(\beta_1,....,\beta_k)^T , \  e \ \gamma=(\gamma_1,..,\gamma_h)^T , k+h<n$ insieme dei coefficienti di regressione, $x_i \ e \ z_i$ vettori di reggressori e $\ni_1i \ e \ni_21 $ predittori lineari. Per quanto riguarda i residui vengono usati i residui di Pearson che Ferrari e Cribari chiamano residui ordinari standardizzati
-$$r_{P,i=\frac{y_i-\hat{\mu}_i}{\sqrt{\hat{V(y_i)}}}}$$  dove $\hat{V}(y_i)\frac{\hat{\mu}_i(1-\hat{\mu}_i)}{(1+\hat{\psi}_i)}$ con $\hat{\mu}_i=g_1 ^{-1}(x_i ^T \hat{\beta}) \ e \ \hat{\phi_i}=g_2^{-1}(z_i ^T \hat{\gamma}_i)$.
+dove $\beta=(\beta_1,....,\beta_k)^T  \  e \ \gamma=(\gamma_1,..,\gamma_h)^T \ con \  k+h<n$ insiemi dei coefficienti di regressione, $x_i \ e \ z_i$ vettori di reggressori e $\eta_{1i} \ e \ \eta_{21} $ predittori lineari. 
 
-Ferrai e Cribari-Neto nell'elaborato del (2008) danno una nuova versione dei residui con proprietà migliori chiamandoli residui standardizzati pesati 2:
+Per quanto riguarda i residui vengono usati  i residui di Pearson che Ferrari e Cribari chiamano residui ordinari standardizzati:
+$$r_{P,i=\frac{y_i-\hat{\mu}_i}{\sqrt{\hat{V}(y_i)}}}$$  dove $\hat{V}(y_i)=\frac{\hat{\mu}_i(1-\hat{\mu}_i)}{(1+\hat{\psi}_i)}$ con $\hat{\mu}_i=g_1 ^{-1}(x_i ^T \hat{\beta}) \ e \ \hat{\phi_i}=g_2^{-1}(z_i ^T \hat{\gamma}_i)$.
+
+Ferrari e Cribari-Neto nell'elaborato del (2008,\cite{RESIDUAL}) danno una nuova versione dei residui con proprietà migliori chiamandoli residui standardizzati pesati 2:
 
 $$r_{SW2,i}=\frac{y_i ^* - \hat{\mu}_i ^*}{\sqrt{\hat{v_i}(1-h_ii)}}$$
-dove $y_i ^* = log{y_i/(1-y_i)} \ e \ \mu _i ^* = \psi (\mu_i \phi)-\psi ((1-\mu_i)\phi)$ con $\psi (\cdot)$ la funzione standardizzata di digamma. Si standardizza poi utilizzando $v_i= {\psi ' (\mu_i\phi)+\psi '((1-\mu_i)\phi)}$ e $h_ii$ la i-esima componente della hat matrice.\cite{RESIDUAL}
+dove $y_i ^* = \log\{y_i/(1-y_i)\} \ e \ \mu _i ^* = \psi (\mu_i \phi)-\psi ((1-\mu_i)\phi)$ con $\psi (\cdot)$ la funzione standardizzata di digamma. Si standardizza poi utilizzando $v_i= {\psi ' (\mu_i\phi)+\psi '((1-\mu_i)\phi)}$ e $h_{ii}'$ la i-esima componente della matrice  hat.
 
 	\subsection{Determinizzazione degli stimatori.}
 %%FIX-ME: determinare qual'è l'intervallo di t di \mu e y.
-Siano$$y_t^*=log(\frac{y_t}{1-y_t})$$ e $$\mu_t^*=\psi(\mu_t\phi)-\psi((1-\mu_t)\phi),$$ dove $\psi(x)=\frac{\partial \log \Gamma(x)}{\partial x}$ con $x>0$ è detta funzione \emph{digamma.} Denotiamo con $$\nabla(\beta,\phi)=\begin{pmatrix}
+Si considerino le notazioni appena introdotte $$y_i^*=\log\bigg(\frac{y_i}{1-y_i}\bigg)$$ e $$\mu_i^*=\psi(\mu_i\phi)-\psi((1-\mu_i)\phi),$$ dove $\psi(x)=\frac{\partial \log \Gamma(x)}{\partial x}$ con $x>0$ è detta funzione \emph{digamma.} Denotiamo con $$\nabla(\beta,\phi)=\begin{pmatrix}
 U_\beta(\beta,\phi)\\U_\phi(\beta,\phi)
 \end{pmatrix}$$
-la funzione \emph{score}, ottenuta differenziando la funzione di log-verosimiglianza rispetto i due parametri sconosciuti. Dunque 
+la funzione \emph{score}, ottenuta differenziando la funzione di log-verosimiglianza rispetto i due parametri ignoti. Dunque 
 $$U_\beta(\beta,\phi)=\frac{\partial l(\beta,\phi)}{\partial \beta}=\phi X^tT(y^*-u^*), $$
-dove $X$ è la matrice del modello di dimensione $n \times k$, $T$ è una matrice diagonale la cui dimensione $n \times n$ definita come $T=diag\{g'(\mu)_1^{-1},...,g'(\mu_i)^{-1}\}$, $y^*=(y_1^*, ..., y_n^*)$ e $\mu^*=(\mu_1^*, ..., \mu_n^*)$. Mentre \begin{align*}
-U_\phi(\beta,\phi)=&\sum_{t=1}^{n}\{ \mu_t(y_t^*-\mu_t^*)
-+ log(1-y_t)\\ & - \phi((1-\mu_t)\psi)+ \phi(\psi)  \}
+dove $X$ è la matrice del modello di dimensione $n \times k$, $T$ è una matrice diagonale la cui dimensione $n \times n$ definita come $T=diag\{g'(\mu_1)^{-1},...,g'(\mu_n)^{-1}\}$, $y^*=(y_1^*, ..., y_n^*)$ e $\mu^*=(\mu_1^*, ..., \mu_n^*)$. Mentre \begin{align*}
+U_\phi(\beta,\phi)=&\sum_{i=1}^{n}\{ \mu_i(y_i^*-\mu_i^*)
++ log(1-y_i)\\ & - \phi((1-\mu_i)\psi)+ \phi(\psi)  \}
 \end{align*}
-Possiamo dunque concludere che gli stimatori di massima verosimiglianza (MLEs) per $\beta$ e $\phi$ sono ottenibili ponendo rispettivamente $U_\beta(\beta,\phi)$ e $U_\phi(\beta,\phi)$ uguali a zero.
-Tale tipo di equazioni non sono risolvibili analiticamente, ma il risultato può essere approssimato attraverso un  algoritmo numerico quale l'algoritmo di \emph{Newton}. Tali algoritmi necessitano di un punto di partenza ($\beta_0,\phi_0$), che nel caso di $\beta$ utilizzando il metodo dei minimi quadrati è $$ \beta_0=(X^tX)^{-1}X^tz,$$ dove  $z=(g(y_1),...,g(y_n))^t$.
+Quindi gli stimatori di massima verosimiglianza (MLEs) per $\beta$ e $\phi$ sono ottenibili ponendo rispettivamente $U_\beta(\beta,\phi)$ e $U_\phi(\beta,\phi)$ uguali a zero.
+Tale tipo di equazioni non sono risolvibili analiticamente, ma il risultato può essere approssimato attraverso un  algoritmo numerico come l'algoritmo di \emph{Newton}. Tali algoritmi necessitano di un punto di partenza ($\beta_0,\phi_0$), che nel caso di $\beta$ utilizzando il metodo dei minimi quadrati è $$ \beta_0=(X^tX)^{-1}X^tz,$$ dove  $z=(g(y_1),...,g(y_n))^t$.
 Mentre per $\phi$, \emph{Ferrari e Cribari-Neto} in \cite{2004} suggeriscono  come punto di partenza $$
-\phi_0=\frac{1}{n}\sum_{t=1}^{n}\frac{\breve{\mu}_t(1-l\breve{\mu}_t)}{\breve{\sigma}_t^2},
+\phi_0=\frac{1}{n}\sum_{i=1}^{n}\frac{\breve{\mu}_i(1-l\breve{\mu}_i)}{\breve{\sigma}_i^2},
 $$
-dove $\breve{\mu}_t$ è ottenuto applicando la funzione $g^{-1}(\cdot)$ al \emph{t-esimo} valore stimato dal modello di regressione lineare di $g(y_1),...,g(y_n)$ su $X$: $$\breve{\mu}_t=g^{-1}(x_t^t(X^tX)^{-1}X^t z)$$  e $$ \breve{\sigma}_t^2=\frac{\breve{e}^t\breve{e}}{(n-k)[g'(\breve{\mu})_t]^2} $$
+dove $\breve{\mu}_i$ è ottenuto applicando la funzione $g^{-1}(\cdot)$ al \emph{i-esimo} valore stimato dal modello di regressione lineare di $g(y_1),...,g(y_n)$ su $X$: $$\breve{\mu}_i=g^{-1}(x_i^t(X^tX)^{-1}X^t z)$$  e $$ \breve{\sigma}_i^2=\frac{\breve{e}^t\breve{e}}{(n-k)[g'(\breve{\mu})_i]^2} $$
 dove $\breve{e}=z-X(X^tX)^{-1}X^tz$.
 
-Consideriamo ora la matrice d'informazione di \emph{Fisher}, che servirà per poter approssimare l'errore standard degli stimatori $\hat{\beta}$ e $\hat{\phi}$. Poniamo prima $W=diag\{w_1,...,w_n\}$, con $$w_t=\phi\{\psi'(\mu_t\phi)+ \psi'((1-\mu_t)\phi) \}\frac{1}{\{g'(\mu_t)\}^2}, $$ $c=(c_1,...,c_n)^t$,  dove $$c_t=\phi\{\psi'(\mu_t\phi)\mu_t-\phi'((1-\mu_t)\phi)(1-\mu_t) \}$$
-e $\psi'(\cdot)$ è la funzione \emph{trigamma}, definita come segue $$\psi'(x)=\frac{\partial^2}{\partial z^2}\log \Gamma(x).$$
+Consideriamo ora la matrice d'informazione di \emph{Fisher}, che servirà per poter approssimare l'errore standard degli stimatori $\hat{\beta}$ e $\hat{\phi}$. Poniamo prima $W=diag\{w_1,...,w_n\}$, con $$w_i=\phi\{\psi'(\mu_i\phi)+ \psi'((1-\mu_i)\phi) \}\frac{1}{\{g'(\mu_i)\}^2}, $$ $c=(c_1,...,c_n)^t$,  dove $$c_i=\phi\{\psi'(\mu_i\phi)\mu_i-\phi'((1-\mu_i)\phi)(1-\mu_i) \}$$
+e $\psi'(\cdot)$ è la funzione \emph{trigamma} $\psi'(x)=\frac{\partial^2}{\partial x^2}\log \Gamma(x).$
 Sia dunque $K$ la matrice d'informazione di \emph{Fisher}:
 
 \begin{equation}
@@ -251,7 +253,7 @@ dove
 	\item $K_{\phi \phi}=tr(D)$.
 \end{itemize}
 
-Sotto le condizioni di normalità, d'indipendenza e di omogeneità di varianza delle variabili, quando la grandezza del campione è grande, vale che
+Sotto le condizioni di normalità, d'indipendenza e di omogeneità di varianza delle variabili, quando la numerosità del campione è elevata, vale che
 $$ \begin{pmatrix}\hat{\beta}\\ \hat{\phi} \end{pmatrix} \sim \mathcal{N}_{k+1}\Bigg(\begin{pmatrix}\beta\\ \phi \end{pmatrix},K^{-1}\Bigg).$$ 
 
 Denoteremo con $SE(\hat{\beta_j})$ l'errore standard asintottico del MLE $\hat{\beta_j}$, che si ottiene dall'inversa della matrice di \emph{Fisher} \eqref{eq:Fisher} valutata in $\hat{\beta_j}$ e in $\hat{\phi}$.
@@ -268,16 +270,16 @@ SE(\hat{\phi})&=\sqrt{tr(D)-\phi^{-1}c^tT^tX(X^tWX)^{-1}X^tTc}\\
 &=\sqrt{\hat{\gamma}}.
 \end{align*}
 
-In fine è possibile determinare un intervallo di confidenza $(1-\alpha)100\%$ per il valore atteso della variabile risposta $\mu$ per un dato vettore d'osservazioni delle variabili regressori $x_0=[1,x_{01},x_{02},...,x_{0k}]$:
+Infine è possibile determinare un intervallo di confidenza $(1-\alpha)100\%$ per il valore atteso della variabile risposta $\mu$ per un dato vettore d'osservazioni delle variabili regressori $x_0=[1,x_{01},x_{02},...,x_{0k}]$:
 $$[Lim_{sx}, Lim_{dx}]\footnote{Tale intervallo è valido solo per funzioni di collegamento $g(\cdot)$ strettamente crescenti.}$$ dove 
 $$Lim_{sx}=\bigg[ g^{-1}\bigg(\hat{\eta} -\Phi^{-1}\Big(\frac{1-\alpha}{2}\Big)SE(\hat{\eta})\bigg)  \bigg]  $$
 mentre
 $$ Lim_{dx}=\bigg[ g^{-1}\bigg(\hat{\eta} +\Phi^{-1}\Big(\frac{1-\alpha}{2}\Big)SE(\hat{\eta})\bigg)  \bigg], $$
-con $\hat{\eta}=x_0^t \hat{\beta}$ e $SE(\hat{\eta})=\sqrt{x_0^t \widehat{\text{cov}}(\hat{\beta})x_0}$ dove $\widehat{\text{cov}}(\hat{\beta})$ è ottenuto dall'inversa della matrice di \emph{Fisher} \eqref{eq:Fisher} valutata negli MLEs escludendo la riga e la colonna relative al parametro di precisione $\hat{\phi}$.
+con $\hat{\eta}=x_0^t \hat{\beta}$ e $SE(\hat{\eta})=\sqrt{x_0^t \widehat{\text{Cov}}(\hat{\beta})x_0}$ dove $\widehat{\text{Cov}}(\hat{\beta})$ è ottenuto dall'inversa della matrice di \emph{Fisher} \eqref{eq:Fisher} valutata negli MLEs escludendo la riga e la colonna relative al parametro di precisione $\hat{\phi}$.
 \newpage
 \onecolumn
-\section{Pacchetto BetaReg}
-Il pacchetto BetaReg è una collezione di funzioni implementate in ``R system for statistica computing",  con la quale è possibile fare inferenza su variabili beta distribuite. Il pacchetto è disponibile presso il \emph{``Comprehensive R Archive Network" (CRAN).} Le versioni dalla 1.0 alla 1.2 sono state implementate da \emph{Simas e Rocha} fino al 2006. Dalla versione 2.0, il principale contribuente alla manutenzione e all'estensione del pacchetto è stato \emph{Achim Zeileis}, coautore dell'articolo \cite{BReg2006}.
+\section{Pacchetto Betareg}
+Il pacchetto BetaReg è una collezione di funzioni implementate in ``R system for statistica computing",  con il quale è possibile modellare variabili dipendenti beta distribuite. Il pacchetto è disponibile presso il \emph{``Comprehensive R Archive Network" (CRAN).} Le versioni dalla 1.0 alla 1.2 sono state implementate da \emph{Simas e Rocha} fino al 2006. Dalla versione 2.0, il principale contribuente alla manutenzione e all'estensione del pacchetto è stato \emph{Achim Zeileis}, coautore dell'articolo \cite{BReg2006}.
 \begin{lstlisting}[caption={Signature della funzione betareg()},label={lst:signature}]
 betareg(formula, data, subset, na.action, weights, offset,
 link = "logit", link.phi = NULL, control = betareg.control(...), model = TRUE, y = TRUE, x = FALSE, ...)
@@ -290,9 +292,9 @@ Nel listing \ref{lst:signature} viene data la \emph{signature} della funzione di
 	\item \texttt{na.action:} funzione che descrive come comportarsi dinnanzi a elementi \texttt{NA}.
 	\item \texttt{weights}: vettore di pesi. 
 	\item \texttt{link:} specifica la funzione di collegamento. Le possibili scelte sono: \texttt{logit, probit, cloglog, cauchit, log, loglog}. Il valore di default è \texttt{logit}.
-	\item \texttt{link.phi}: specifica la funzione di collegamento per il parametro di precisione $\phi$. La scelte possibili sono: \texttt{identity, sqrt, log}. La opzione di default è \texttt{log}.
+	\item \texttt{link.phi}: specifica la funzione di collegamento per il parametro di precisione $\phi$. La scelte possibili sono: \texttt{identity, sqrt, log}.
 	\item \texttt{control}: prende come parametro un oggetto di tipo \texttt{betareg.control}.
-	\texttt{model, x, y}: argomenti di tipo logico (\texttt{TRUE, FALSE}). Se impostati a  \texttt{TRUE}, vengono restituiti il \emph{model.frame, model matrix} e il \emph{vettore della variabile risposta} rispettivamente.
+	\item \texttt{model, x, y}: argomenti di tipo logico (\texttt{TRUE, FALSE}). Se impostati a  \texttt{TRUE}, vengono restituiti il \emph{model.frame, model matrix} e il \emph{vettore della variabile risposta} rispettivamente.
 \end{itemize}
 
 
@@ -329,18 +331,18 @@ L'oggetto restituito dal modello stimato della classe \texttt{betareg} è una li
 
 
 
-Di seguito un esempio per fissare le idee: consideriamo la seguente \texttt{formula} $$\mathtt{y \sim x_1+x_2}$$ che descrive $y_i$ e $x_i$ per l'equazione \eqref{eq:mean} mentre l'equazione \eqref{eq:precisione} sarà quella banale cioè avremo $\phi_i$ costante e di conseguenza $z_i=1$ e la funzione di collegamento $g_2$ la funzione identità; che corrisponde al modello base definito nel (2004).
- Possiamo specificare un secondo insieme di regressori tramite la formula two-part in questo modo:\\
-  \texttt{formula} $$\mathtt{y \sim x_1+x_2 | z_1+z_2+z_3}$$ 
-in questo caso abbiamo la stessa formulazione della media \eqref{eq:mean} mentre la \eqref{eq:precisione} non è più banale. I regressori $z_i$ vengo presi dalla \texttt{$z_1+z_2+z_3$}, alla funzione di collegamento viene assegnata la funzione logaritmo cioè $g_2(\cdot)=log(\cdot).$
-
-Di conseguenza $\mathtt{y \sim x_1+x_2}$ e $\mathtt{y \sim x_1+x_2 | 1}$ corrisponde alla stessa beta vero-somiglianza ma usano una diversa  parametrizzazione per $\phi_i$ cioè $\phi_i=\gamma_1$ nel primo caso e $\log(\phi)=\gamma_1$ nel secondo. 
+Di seguito un esempio per fissare le idee: consideriamo la seguente \texttt{formula} $$\mathtt{y \sim x_1+x_2}$$ che descrive $y_i$ e $x_i$ per l'equazione \eqref{eq:mean} mentre per l'equazione \eqref{eq:precisione} avremo $\phi_i$ costante e di conseguenza $z_i=1$ e la funzione di collegamento $g_2$ la funzione identità, che corrisponde al modello base definito nel (2004) senza variabili di dispersione.
+ Possiamo specificare un secondo insieme di regressori tramite la formula two-part nel seguente modo:
+ $$\mathtt{y \sim x_1+x_2 | z_1+z_2+z_3}$$ 
+in questo caso abbiamo la stessa formulazione dell'equazione \eqref{eq:mean} mentre per l'equazione \eqref{eq:precisione} $\phi_i$ non è più costante. I regressori $z_i$ vengo presi dalla \texttt{$z_1+z_2+z_3$}, alla funzione di collegamento viene assegnata la funzione logaritmo cioè $g_2(\cdot)=log(\cdot).$
+\section{Esempi implementativi}
+Nella seguente sezione verranno analizzati e commentati due esempi di dataset presenti del pacchetto \texttt{betareg}.
 \subsection{Esempio: gasoline}
 Nella seguente sezione verrà considerato un esempio a scopo illustrativo. L'insieme di dati preso in considerazione è relativo alla quota di petrolio greggio trasformato in benzina dopo la distillazione. Le variabili presenti nel dataset sono:
 \begin{itemize}
-	\item \texttt{yield:} rappresentante il tasso di petrolio greggio trasformato in benzina dopo la distillazione.
-	\item \texttt{gravity:} rappresentante la gravità del petrolio greggio.
-	\item \texttt{pressure:} rappresentante la pressione della materiale grezzo (libre/pollice$^2$). 
+	\item \texttt{yield:} tasso di petrolio greggio trasformato in benzina dopo la distillazione.
+	\item \texttt{gravity:} gravità del petrolio greggio.
+	\item \texttt{pressure:} pressione della materiale grezzo (libre/pollice$^2$). 
 	\item \texttt{temp10}: temperatura per la quale il 10\% di petrolio greggio vaporizza.
 	\item \texttt{temp}: temperatura per la quale il 100\% di petrolio greggio vaporizza.
 	\item \texttt{batch}: variabile fattore di 10 livelli. Ognuno di essi ha una propria gravità, pressione e temperatura d'evaporazione al 10\%.
@@ -351,7 +353,7 @@ library(betareg)
 data("GasolineYield", package = "betareg")
 str(GasolineYield)
 @
-Si procede dunque caricando la libreria \texttt{betareg}, dopo di che viene considerato un modello di regressione Beta di tipo omoschedastico, analizzanùdo il rapporto tra le variabili regressioni \texttt{batch} e \texttt{temp} rispetto la variabile risposta \texttt{yield}. Il modello è stato adattato 
+Si procede dunque caricando la libreria \texttt{betareg}, dopo di che viene considerato un modello di regressione Beta di tipo omoschedastico, analizzando il rapporto tra le variabili regressioni \texttt{batch} e \texttt{temp} rispetto la variabile risposta \texttt{yield}. Il modello è stato adattato 
  attraverso le istruzioni \texttt{m1<-betareg(yield $\sim$ batch+temp, data=GasolineYield)} con la seguente analisi del \texttt{summary(m1)}. L'output ottenuto della funzione \texttt{summary} è simile a quello degli oggetti \texttt{glm}.
 In particolare troviamo:
 \begin{itemize}
@@ -384,7 +386,7 @@ plot(m1, which = 6, type = "pearson", sub.caption = "")
 par(pty="m")
 plot(m1, which = 2)
 @
-Analizzando il plot rappresentante le \emph{distanze di Cook}, si può notare che la quarta osservazione ha il valore più alto rispetto tutte le altre e supera il valore \emph{0.5}. Andrebbe dunque considerata una versione del modello, stimato sugli stessi punti del modello \texttt{m1}, omettendo la quarta osservazione.
+Analizzando il plot rappresentante le \emph{distanze di Cook}, si può notare che la quarta osservazione ha il valore più alto rispetto tutte le altre e supera il valore \emph{0.5}. Andrebbe dunque considerata una versione del modello, stimato sugli stessi punti del modello \texttt{m1} omettendo la quarta osservazione.
 <<eval=TRUE>>=
 m2 <- betareg(yield~batch+temp, data=GasolineYield,subset=-4)
 summary(m2)
@@ -397,7 +399,7 @@ Consideriamo ora un nuovo modello, dove andiamo ad esplicitare il coefficiente d
 m1.eteroske <- betareg(yield~batch+temp | temp, data=GasolineYield)
 summary(m1.eteroske)
 @
-Non avendo esplicitato alcuna funzione di collegamento per $g_2(\cdot)$, è stata utilizzata quella di default, ovvero quella di tipo logaritmico.
+Non avendo esplicitato alcuna funzione di collegamento per $g_2(\cdot)$, è stata utilizzata quella di default, ovvero quella di tipo \texttt{logit}.
 Attraverso la funzione \texttt{lmtest::lrtest} è possibile effettuare un confronto tra il modello \texttt{m1.eteroske} e \texttt{m1} utilizzando il test di ratio-verosimiglianza. 
 <<eval=TRUE>>=
 lmtest::lrtest(m1,m1.eteroske)
@@ -420,7 +422,7 @@ summary(m1.probit)$pseudo.r.squared-summary(m1)$pseudo.r.squared
 AIC(m1,m1.probit)
 BIC(m1,m1.probit)
 @
-Si può notare che l'utilizzo di una funzione di collemento diversa da quella standard porta a miglioramenti poco significativi. Il risultato dell'AIC e della differenza tra i due indici $R^{2}$-adjusted ne danno conferma.
+Si può notare che utilizzando come funzione di collegamento la funzione \texttt{probit} rispetto quella standard (\texttt{logit}) porta  miglioramenti poco significativi. Il risultato dell'AIC e della differenza tra i due indici $R^{2}$-adjusted ne danno conferma.
 
 In fine verrà considerato un modello in cui viene utilizzata la funzione di collegamento \texttt{loglog}:
 <<eval=TRUE>>=
@@ -439,14 +441,14 @@ AIC(m1,m1.eteroske,m1.probit,m1.loglog)
 \begin{figure}[H]
 \centering
 \includegraphics[scale=0.3]{gasolinePlot3}
-\caption{Nel seguente plot sono riportate le \emph{fitted curves}: in \color{red} rosso \color{black} il modello \texttt{m1.loglog}, in \color{blue}blu\color{black} il modello \texttt{m1} ed in fine il modello \texttt(m1.probit) in \color{gray} grigio. \color{black}}
+\caption{Nel seguente plot sono riportate le \emph{fitted curves}: in \color{red} rosso \color{black} il modello \texttt{m1.loglog}, in \color{blue}blu \color{black} il modello \texttt{m1} ed in fine il modello \texttt(m1.probit) in \color{gray} grigio. \color{black}}
 \end{figure}
 
 
 \subsection{Esempio 2: Spese domestiche per gli alimenti}
-Consideriamo un secondo esempio sempre nell'ambito betareg che consiste nel trovare la dipendenza della variabile dipendente \texttt{food\ income} la proporzione di redditto che ogni famiglia spende nell'acquisto degli alimenti. Le variabili regressori sono: la variabile numerica \texttt{persons} componenti della famiglia e ovviamente la variabile \texttt{income} totale di tutte le entrate della famiglia. Visualizziamo le variabili
+Consideriamo un secondo esempio sempre nell'ambito betareg che consiste nel trovare la dipendenza della variabile dipendente \texttt{food/income} la proporzione di redditto che ogni famiglia spende nell'acquisto degli alimenti. Le variabili regressori sono: la variabile numerica \texttt{persons} componenti della famiglia e ovviamente la variabile \texttt{income} totale di tutte le entrate della famiglia. 
 
-Consideriamo il Modello di regressione lineare per il nostro dataset:
+Consideriamo il modello di regressione lineare per il dataset:
 
 <<eval=TRUE>>=
 data("FoodExpenditure",package = "betareg")
@@ -455,20 +457,21 @@ mod.regressione<-lm(I(food/income) ~ income+persons, data = FoodExpenditure)
 
 \begin{figure}[H]
 \centering
-\includegraphics[scale=0.3]{primo_es2}
+\includegraphics[scale=0.25]{primo_es2}
+\caption{A sinistra la fitted curves del modello di regressione lineare. A destra il plot diagnostisco rappresentante  i fitted values rispetto la radice quadrata del valore assoluto dei residui standardizzati.}
 \end{figure}
 
-Insieme al grafico che riproduce la fitted curve del modello di regressione lineare abbiamo eseguito anche uno dei grafici diagnostici per poter controllare la varianza tramite il plot dei fitted values e la radice del valore assoluto dei residui standardizzati utilizzando \texttt{which=3}. A prima vista la varianza non appare costante per poterlo confermare eseguiamo dei test.
+Insieme al grafico che riproduce la fitted curve del modello di regressione lineare è stato eseguito anche uno dei grafici diagnostici per il controllo della varianza tramite il plot dei fitted values e la radice del valore assoluto dei residui standardizzati utilizzando \texttt{which=3}. A prima vista la varianza non appare costante, per poterlo confermare eseguiamo dei test.
 
 
-Vogliamo vedere se il modello preso in considerazione è eteroschedastico. Per fare la verifica utilizziamo il \textit{Test di Breusch e Pagan} che verificare l'ipotesi di omoschedasticità, applica ai residui gli stessi concetti della regressione lineare. Esso è valido per grandi campioni, assume che gli errori siano indipendenti e normalmente distribuiti e che la loro varianza $\sigma_t ^2$ sia funzione lineare del tempo. Come ipotesi nulla, considera la funzione logartimo della varianza definita prima, costante. Troviamo questo test nella \texttt{library("lmtest")} con il nome di \texttt{(bptest)} 
+Vogliamo vedere se il modello preso in considerazione è eteroschedastico. Per la verifica utilizziamo il \textit{Test di Breusch e Pagan} che verificare l'ipotesi di omoschedasticità, applicando ai residui gli stessi concetti della regressione lineare. Esso è valido per campioni di dimensioni elevate e assume che gli errori siano indipendenti e normalmente distribuiti e che la loro varianza $\sigma_t ^2$ sia funzione lineare del tempo. Come ipotesi nulla, considera la funzione logartimo della varianza definita prima, costante. Troviamo questo test nella \texttt{library("lmtest")} con il nome di \texttt{(bptest)} 
 
 <<eval=TRUE>>=
 library("lmtest")
 bptest(mod.regressione)
 @
 
-Possiamo vedere dal p-value che l'ipotesi nulla viene rifiuta, in favore di una varianza non costante. Concludiamo che il nostro modello è eteroschedastico, quindi il modello di beta regressione è più appropriato. Usiamo come funzione di collegamento quella di default 
+Possiamo vedere dal p-value che l'ipotesi nulla viene rifiuta, in favore di una varianza non costante. Concludiamo che il modello presenta eteroschedasticità, quindi il modello di beta regressione è più appropriato. Come funzione di collegamento viene considerata quella di default 
 <<eval=TRUE>>=
 library("betareg")
 data("FoodExpenditure",package = "betareg")
@@ -478,10 +481,11 @@ summary(beta_regressione)
 \begin{figure}[H]
 \centering
 \includegraphics[scale=0.3]{secondo_es2}
+\caption{A confronto in \color{blue} blu \color{black} il modello  \texttt{beta\_regressione} e in \textbf{nero} il modello \texttt{mod.regressione}. }
 \end{figure}
 
 Mettendo a confronto entrambi i modelli possiamo vedere che in realtà non differiscono molto. Le fitted curves differiscono poco una dall'altra ciò significa che i modelli resistituiscono risultati simili. 
-Da entrambi possiamo concludere che la percentuale è più elevata per famiglie a poco reddito significa che la spesa per gli alimenti incide notevolmente sul budget famigliare. La percentuale del reddito  speso per gli alimenti scende all'aumentare del reddito delle famiglie,cioè la spesa incide meno sul budget famigliare. La spesa aumenta inoltre all'aumentare dei componenti delle famiglie. Ma questo aumento non viene catturato bene dal modello beta in questo caso. Decidiamo quindi di aggiungere la variabile \texttt{persons} come variabile regressore aggiuntiva nell'equazione di precisione. Consideriamo quindi un modello con variabile di dispersione.
+Da entrambi possiamo concludere che la percentuale è più elevata per famiglie a poco reddito significa che la spesa per gli alimenti incide notevolmente sul budget famigliare. La percentuale del reddito  speso per gli alimenti scende all'aumentare del reddito delle famiglie, cioè la spesa incide meno sul budget famigliare. La spesa aumenta inoltre all'aumentare dei componenti delle famiglie. Ma questo aumento non viene catturato bene dal modello beta in questo caso. Decidiamo quindi di aggiungere la variabile \texttt{persons} come variabile regressore aggiuntiva nell'equazione di precisione. Consideriamo quindi il seguente modello con variabile di dispersione.
 
 <<eval=TRUE>>=
 library("betareg")
@@ -498,10 +502,9 @@ lrtest(beta_regressione,beta_regressione_persons)
 AIC(beta_regressione,beta_regressione_persons)
 BIC(beta_regressione,beta_regressione_persons)
 @
+Da entrambi gli indici AIC e BIC troviamo un evidente miglioramento nel modello con variabile di dispersione.
 
-Troviamo un evidente miglioramento nel modello con dispersione da entrambi gli indici AIC e BIC.
-
-Fino ad ora abbiamo considerato come funzione di collegamento \texttt{logit}, vogliamo vedere se avviene con cambiamento utilizzando le altre funzioni di collegamento, e lo possiamo fare mettendole a confronto tutte insieme
+Fino ad ora è stata considerata la funzione di collegamento \texttt{logit}, vogliamo vedere se avviene otteniamo un miglioramento utilizzando altre funzioni di collegamento. Lo si può fare con una singola istruzione:
 
 <<eval=TRUE>>=
 sapply(c("logit","probit","cloglog","cauchit","loglog"),
@@ -513,6 +516,7 @@ Notiamo che le funzione di collegamento hanno un effetto molto simile, l'unica c
 \begin{figure}[H]
 \centering
 \includegraphics[scale=0.3]{fine_es2}
+\caption{Confronto tra i tre modelli: in \color{red} rosso \color{black} il modello \texttt{beta\_regressione}, in \color{blue} blu \color{black} il modello \texttt{beta\_regressione\_persons} ed infine in \textbf{nero} il modello \texttt{beta\_regressione\_persons\_cauchit}. }
 \end{figure}
 
 
@@ -527,7 +531,6 @@ Notiamo che le funzione di collegamento hanno un effetto molto simile, l'unica c
 	\bibitem{BReg2006}\textbf{betareg 1.2} - Simas AB, Rocha (2006). betareg: Beta Regression. R package \\ \texttt{http://CRAN.R-project.org/src/contrib/ Archive/betareg/}.
 	\bibitem{RESIDUAL}\textbf{On Beta Regression Residuals} Espinheira PL, Ferrari SLP, Cribari-Neto F (2008b). Journal
 of Applied Statistics, 35(4), 407–419.
-
 \end{thebibliography}
 
 \end{document}
