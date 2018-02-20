@@ -1,0 +1,371 @@
+\documentclass[usenames,dvipsnames]{beamer}
+\usetheme[
+%%% option passed to the outer theme
+    progressstyle=movingCircCnt,   % fixedCircCnt,  (moving is deault)
+  ]{Feather}
+\setbeamercolor{Feather}{fg=black!20,bg=black}
+\setbeamercolor{structure}{fg=black}
+\usepackage{graphicx}
+%\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage[italian]{babel} 
+\usepackage{tabularx}
+\usepackage[T1]{fontenc} 
+\usepackage{listings}
+\lstset{% setup listings
+	language=R,% set programming language
+	basicstyle=\ttfamily\footnotesize,% basic font style
+	keywordstyle=\color{blue},% keyword style
+	commentstyle=\color{gray},% comment style
+	numbers=none,% display line numbers on the left side
+	numberstyle=\scriptsize,% use small line numbers
+	numbersep=10pt,% space between line numbers and code
+	backgroundcolor = \color{yellow!10},
+	framexleftmargin = 1em,
+	framextopmargin = 1em
+	framexbottommargin = 1em
+	tabsize=3,% sizes of tabs
+	showstringspaces=false,% do not replace spaces in strings by a certain character
+	captionpos=b,% positioning of the caption below
+	breaklines=true% automatic line breaking
+}
+
+% colored hyperlinks
+\newcommand{\chref}[2]{
+  \href{#1}{{\usebeamercolor[bg]{Feather}#2}}
+}
+\newcommand{\cfbox}[2]{%
+	\colorlet{currentcolor}{.}%
+	{\color{#1}%
+		\fbox{\color{currentcolor}#2}}%
+}
+
+
+
+
+\title[Un pacchetto R: betareg] % [] is optional - is placed on the bottom of the sidebar on every slide
+{ % is placed on the title page
+      \textbf{Un pacchetto R:\\ BETAREG}
+}
+
+\subtitle[ | BETAREG]
+{
+      \textbf{Applied statistics and data analysis}
+}
+
+\author[Riouak Idriss, Marta Rotari]
+{      Riouak Idriss\\Marta Rotari
+}
+
+\institute[]
+{
+      
+    Università degli studi di Udine\\
+    Dipartimento di Matematica e Informatica \\
+    Laurea specialistica in Informatica\\
+  
+ 
+}
+
+\date{9 Gennaio 2018}
+
+%-------------------------------------------------------
+% THE BODY OF THE PRESENTATION
+%-------------------------------------------------------
+
+\begin{document}
+
+%-------------------------------------------------------
+% THE TITLEPAGE
+%-------------------------------------------------------
+
+{\1
+\begin{frame}[plain,noframenumbering] 
+  \titlepage 
+\end{frame}}
+
+\begin{frame}{Riferimenti Bibliografici}
+\setbeamertemplate{bibliography item}[article]
+\begin{thebibliography}{99}
+	\bibitem{AaronBradleyZhoar} Cribari-Neto Francisco, Achim Zeileis \textit{Beta Regression in R} (2006).
+\bibitem{AaronBradley} Ferrari SLP, Cribari-Neto Francisco \textit{Beta Regression for Modelling Rates and Proportions} (2004). 
+
+\bibitem{ABradleyCimatti} Simas AB, BarretoSouza W, Rocha AV \textit{Improved Estimators for a General Class of Beta Regression Models} (2010) 
+\bibitem{Griggio} Paolo Vidoni \textit{Towards multiple linear regression and logistic regression}  2017-2018. Lecture 5. Applied Statistics and Data Analysis.
+\end{thebibliography}
+\end{frame}
+\section{Definizioni e Notazioni}
+\begin{frame}[fragile]{Introduzione: modello di regressione}
+\begin{itemize}[<+->]
+	\item[] Un modello di regressione ha lo scopo di studiare le relazioni tra una variabile $(y)$ detta variabile di \alert{risposta}, e una o più variabili  \alert{regressori} $(x)$. Inoltre permette di effettuare predizioni dato un nuovo valore per la variabile $x$.
+	
+	\item[]	Nel 2004  viene definito il \alert{Modello di regressione con variabile risposta Beta} [2] per variabili continue con valori in (0, 1), come possono essere \emph{proporzioni} e \emph{ tassi}, assumendo che la variabile risposta sia beta-distribuita. \item[] Successivamente nel 2006, nell'articolo <<Beta Regression in R>> [1] ne viene fornita un'implementazione in R.
+\end{itemize}
+
+
+\end{frame}
+
+\begin{frame}{Distribuzione Beta}
+\begin{itemize}
+\item[]La variabile di risposta $y$ ha una funzione di distribuzione di probabilità continua definita da due parametri sull'intervallo $(0,1)$. 
+$$f(y;\mu, \phi )=\frac{\Gamma (\phi )}{\Gamma (\mu \phi )\Gamma ((1-\mu )\phi )}y^{\mu \phi -1}(1-y)^{(1-\mu)\phi-1}$$
+con $0<y<1$ dove $0<\mu<1$, $\phi>0$ e $\Gamma(z)=\int_{0}^{+\infty}t^{z-1}e^{-t}dt.$
+\item[]Denoteremo $y \sim \mathcal{B}(\mu,\phi)$ la variabile casuale con parametri $\mu \ e \ \phi$ (detto parametro di precisione): $$E(y)=\mu \ e \ V(y)=\frac{\mu (1-\mu )}{1+\phi}$$
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\vspace{1.5cm}
+\begin{figure}[ht]
+\centering
+\includegraphics[scale=.22]{BetaDistribution}
+\caption{Rappresentazione grafica della distribuzione Beta}
+\end{figure}
+
+
+\end{frame}
+
+
+
+
+\begin{frame}{Modello di regressione Beta}
+Sia $y_1,y_2,...,y_n$ un \textbf{campione casuale} tale che $y_i \sim \mathcal{B}(\mu_i,\phi)$ 
+il modello di regressione con variabile di risposta \emph{beta distribuita} è
+$$g(\mu_i)=x_i ^t \beta=\eta_i $$
+\begin{itemize}[<+->]
+	\item $\beta=(\beta_1, \beta_2, ..., \beta_k)^t$, con $k<n$, vettore dei coefficienti,
+	\item $x_i=(x_{i1}, x_{i2},...,x_{ik})^t$, per convenzione $x_{i1}=1$,
+	\item $\eta_i=\beta_1x_{i1}+...+\beta_kx_{ik}$ predittore lineare,
+	\item $g(\cdot):(0,1)\rightarrow\mathbb{R}$ è una funzione $\mathcal{C}^2$, detta funzione di collegamento, avente derivata seconda costante.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Funzioni di collegamento}
+\vspace{0.5cm}
+\hspace{0.5cm}
+Le funzioni di collegamento più utilizzate sono:
+\begin{itemize}
+\item \textbf{logit:} $g(\mu)=log(\frac{\mu}{(1-\mu)}) $
+\item \textbf{probit:} $g(\mu)=\varPhi^{-1}(\mu)$, dove $\varPhi(\cdot)$ è la funzioni di distribuzione normale standard.
+\item \textbf{log-log complementare:}\\ $g(\mu)=\log(-\log(1-\mu))$
+\item \textbf{log-log:} $g(\mu)=\log(-\log(\mu))$
+\item \textbf{Cauchy:} $g(\mu)=\tan(\pi(\mu-0.5))$
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Dispersione}
+\begin{itemize}
+\item[] Nel 2010 è stata formulata un'estensione del modello in
+modello di regressione beta a dispersione variabile che considera il parametro di precisione non più costante.
+\item[] Le osservazioni $y_i \sim \mathbb{\mathcal{B}}(\mu_i, \phi_i)$ indipendenti con 
+\begin{align*}
+g_1(\mu_i)&=\eta_{1i}=x{_i}^T \beta,\\ %\label{eq:mean}\\
+g_2(\phi_i)&=\eta_{2i}=z{_i}^T \gamma,% \label{eq:precisione}
+\end{align*}
+\item[] dove $\beta=(\beta_1,....,\beta_k)^T  \  e \ \gamma=(\gamma_1,..,\gamma_h)^T \ con \  k+h<n$ insiemi dei coefficienti di regressione, $x_i \ e \ z_i$ vettori di reggressori e $\eta_{1i} \ e \ \eta_{2i} $ predittori lineari. 
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Pacchetto: betareg}
+\begin{itemize}
+	\item Il pacchetto \textbf{betareg} è una \textbf{collezione} di funzioni implementate in ``R ",  con il quale è possibile modellare variabili dipendenti beta distribuite.
+	\item Le versioni dalla 1.0 alla 1.2 sono state implementate da \emph{Simas e Rocha} fino al 2006. Dalla versione 2.0, il principale contribuente è stato \emph{Achim Zeileis} coautore dell'articolo
+	\item 	La main-function \texttt{betareg()} è stata progettata e implementata per essere il più simile possibile alla funzione standard \texttt{glm()} (General Linear Model).
+	
+\end{itemize}
+ 
+
+
+\end{frame}
+
+\begin{frame}[fragile]{Signature della funzione}
+\vspace{-0.5cm}
+\begin{lstlisting}[,label={lst:signature}]
+betareg(formula, data, subset, na.action, weights, 
+offset, link = "logit", link.phi = NULL, control = betareg.control(...), model = TRUE, y = TRUE, x = FALSE, ...)
+\end{lstlisting}
+\begin{itemize}[<+->]
+	\item \texttt{formula}: descrizione simbolica del modello, e.g.: \texttt{y $\sim$ x+z}
+	\item \texttt{data, subset:} sorgente dei dati.
+	\item \texttt{na.action:} funzione che descrive come comportarsi dinnanzi a elementi \texttt{NA}.
+	\item \texttt{weights}: vettore di pesi. 
+	\item \texttt{link:} specifica la funzione di collegamento. Il valore di default è \texttt{logit}. Le possibili scelte sono: \texttt{probit, cloglog, cauchit, log, loglog}
+\end{itemize}
+
+\end{frame}
+
+
+\begin{frame}[fragile]{Signature della funzione}
+
+\begin{lstlisting}[,label={lst:signature}]
+betareg(formula, data, subset, na.action, weights, 
+offset, link = "logit", link.phi = NULL, control = betareg.control(...), model = TRUE, y = TRUE, x = FALSE, ...)
+\end{lstlisting}
+\begin{itemize}[<+->]
+\item \texttt{link.phi}: specifica la funzione di collegamento per il parametro di precisione $\phi$  La scelte possibili sono: 
+		\begin{itemize}
+			\item sqrt
+			\item log
+		\end{itemize}
+\item \texttt{control}: prende come parametro un oggetto di tipo \texttt{betareg.control}.
+\item \texttt{model, x, y}: argomenti di tipo logico (\texttt{TRUE, FALSE}). Se impostati a  \texttt{TRUE}, vengono restituiti il \emph{model.frame, model matrix} e il \emph{vettore della variabile risposta} rispettivamente.
+\end{itemize}	
+\end{frame}
+
+\begin{frame}{Esempi su Shiny}
+\vspace{0cm}
+
+\begin{center}
+	\href{http://127.0.0.1:5912}{Esempi su Shiny}\\
+	\href{http://127.0.0.1:3491}{\includegraphics[scale=0.2]{Shiny}}
+
+\end{center}
+\end{frame}
+
+\begin{frame}[fragile, noframenumbering]{Oggetto betareg.control}
+
+Lopzione \texttt{control} prende come parametro un oggetto di tipo \texttt{betareg.control}. Tali oggetti servono per controllare la modalità con la quale veogno stimati i coefﬁcienti del modello.
+\begin{lstlisting}[,label={lst:signature}]
+betareg.control(phi = TRUE, method = "BFGS", maxit = 5000, hessian = FALSE, trace = FALSE, start = NULL, fsmaxit = 200, fstol = 1e-8, ...)
+\end{lstlisting}
+\begin{itemize}
+	\item \texttt{phi}: valore booleano. Indica se il parametro $\phi$ deve essere trattato come un parametro del modello o come un parametro di disturbo.
+	\item \texttt{method}: specifica quale metodo numerico viene utilizzato per stimare i coefficienti. Il valore di default è \texttt{BFGS}.
+	\item \texttt{maxit}: indica il numero massimo di iterate da eseguire.
+\end{itemize}
+\end{frame}
+
+
+
+\begin{frame}[fragile,noframenumbering]{Oggetto betareg.control}
+
+\begin{itemize}
+		\item \texttt{trace:} valore booleno. Indica se deve essere mantenuta traccia delle iterazioni effettuate durante la stima dei coefficienti.
+		\item \texttt{hessian:} valore booleano. Indica se deve essere utilizzato l'Hessiano per stimare la matrice delle covariate. L'opzione di default è \texttt{FALSE}.
+		\item \texttt{start:} un vettore di valori opzionali che indica quali sono in punti di partenza per stimare i coefficienti del modello. Si veda la sezione \texttt{III.i}.
+		\item \texttt{fsmaxit:} valore intero. Indica il numero massimo delle iterazioni del \textit{punteggio di Fisher}.
+		\item \texttt{fstol:} valore numerico. Indica la tolleranza dell'errore per raggiungere la convergenza.
+	\end{itemize}
+	
+\end{frame}
+
+
+\begin{frame}[noframenumbering]{Metodi classe betareg}
+
+L'oggetto restituito dal modello stimato della classe \texttt{betareg} è una lista simile a quella restituita dagli oggetti \texttt{glm}, dove troviamo \texttt{coefficients} e \texttt{terms}. E' possibile interrogare gli oggetti della classe \texttt{betareg} attraverso la funzione \texttt{summary()}. Nella seguente tabella è stata riporta una lista dei metodi e delle funzioni offerte dagli oggetti della classe \texttt{betareg}. 
+
+\begin{table}[t]
+	\centering
+	\label{MethodTable}
+	\begin{tabularx}{\textwidth}{|l|X|}
+		\hline
+		\textbf{FUNZIONE}  & \textbf{DESCRIZIONE}               \\ \hline
+		\texttt{print()}            & Stampa su standard output i coefficienti stimati.                          \\
+		\texttt{summary()}          & Stampa su standard output la stima dei coefficienti, l'errore standard e il test parziale di Wald. Restituisce un oggetto della classe \texttt{summary.betareg}.                        \\ \hline
+			\end{tabularx}
+		\end{table}
+\end{frame}
+
+\begin{frame}[noframenumbering]{Metodi classe betareg}
+
+\begin{table}[t]
+	\centering
+	%	\caption{Principali funzioni e metodi per gli oggetti della classe \texttt{betareg}}
+	\label{MethodTable}
+	\begin{tabularx}{\textwidth}{|l|X|}
+		\hline
+				
+				\texttt{coef()}             & Restituisce tutti i coefficienti del modello, compresi intercetta e coefficiente di  precisione.                      \\
+				\texttt{vcoef()}            & Restituisce la matrice della covarianza.                        \\
+				\texttt{predict()}          & Funzione di predizione del valor atteso, dei predittori lineari, del parametro di precisione e delle varianze.                        \\
+				\texttt{fitted()}           & Valori attesi stimati per un nuovo vettore di osservazioni.                 \\
+				\texttt{residual()}         & Restituisce il vettore dei residui.                    \\
+				\texttt{terms()}            & Restituisce i componenti del modello.       \\
+				\texttt{model.matrix()}     & Restituisce la \emph{Matrice del Modello} \\
+				\texttt{model.frame()}      & Restituisce l'intero frame di dati del modello.                       \\
+				\texttt{loglik()}           & Restituisce la stima di log-verosimiglianza.                    \\ \hline
+	\end{tabularx}
+\end{table}
+\end{frame}
+
+\begin{frame}[noframenumbering]{Metodi classe betareg}
+	\vspace{1cm}
+	\begin{table}[t]
+		\centering
+		%	\caption{Principali funzioni e metodi per gli oggetti della classe \texttt{betareg}}
+		\label{MethodTable}
+		\begin{tabularx}{\textwidth}{|l|X|}
+			\hline
+		\texttt{plot()}             & Stampa sul device grafico i plot dei residui, delle predizioni, dei punti di leva etc.                            \\
+		\texttt{hatvalues}          & Restituisce un vettore di elementi rappresentanti la diagonale della matrice \emph{hat}.                     \\
+		\texttt{cocks.distance}     & Restituisce un'approssimazione della distanza di Cook.                     \\
+		\texttt{glevarage()}        & Restituisce un vettore di elementi con rappresentanti il valore di leva di ogni punto.                      \\ \hline
+		\end{tabularx}
+	\end{table}
+\end{frame}
+
+\begin{frame}[noframenumbering]{Metodi classe betareg}
+	\vspace{1cm}
+	\begin{table}[t]
+		\centering
+		%	\caption{Principali funzioni e metodi per gli oggetti della classe \texttt{betareg}}
+		\label{MethodTable}
+		\begin{tabularx}{\textwidth}{|l|X|}
+			\hline
+			\texttt{coeftest()}         & Test parziale di Wald dei coefficienti.                             \\
+			\texttt{waldtest()}        & Test di Wald per modelli annidati.                      \\
+			\texttt{linear.hypotesis()} &  Test di Wald per ipotesi lineari.                \\
+			\texttt{AIC()}           & Calcola l'Aikaike Information Criteria (AIC) e altri Information Criteria come il BIC.                      \\ \hline
+		\end{tabularx}
+	\end{table}
+\end{frame}
+
+\begin{frame}[fragile,noframenumbering]{Funzione Predict}
+\begin{lstlisting}[,label={lst:signature}]
+predict(object, newdata = NULL, type = c("response", "link", "precision", "variance", "quantile"), na.action = na.pass, at = 0.5, ...)
+\end{lstlisting}
+\begin{itemize}
+	\item object: fitted model object della classe betareg
+	\item newdata: opzionale, un data frame nel quale cercare delle variabili con le quali fare predizione. Se omesso, vengono usate le osservazioni originali
+	\item type: character che indica il tipo di predizione: 
+	\begin{itemize}
+		\item \texttt{response}: fitted means of response, 
+		\item \texttt{link}:corresponding linear predictor, 
+		\item \texttt{precision}fitted precision parameter phi, 
+		\item \texttt{variance}fitted variances of response, 
+		\item \texttt{quantile}fitted quantile(s) of the response distribution 
+	\end{itemize}
+
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile,noframenumbering]{Funzione Predict}
+\begin{itemize}
+\item at: vettore numerico che indica il livello al quale i quantili vengono predetti se nel parametro
+textbf{type="quantile"} di default è assegnata la mediana \textbf{at=0.5}
+\end{itemize}
+ \begin{lstlisting}[,label={lst:signature}]
+ data("GasolineYield", package = "betareg")
+ gy2 <- betareg(yield ~ batch + temp | temp, data = GasolineYield)
+ cbind(predict(gy2, type = "response"),
+ predict(gy2, type = "link"),
+ predict(gy2, type = "precision"),
+ predict(gy2, type = "variance"),
+ predict(gy2, type = "quantile", at = c(0.25, 0.5, 0.75)))
+ \end{lstlisting}
+\end{frame}
+
+
+
+\begin{frame}[noframenumbering]{Intervallo di confidenza}
+	E' possibile determinare un intervallo di confidenza $(1-\alpha)100\%$ per i coefficienti $\hat{\beta}_j$, con $j=1,...,k$. Tale intervallo è:
+	$$ \bigg[\hat{\beta_j} \pm \Phi^{-1}\bigg(1-\frac{\alpha}{2}SE(\hat{\beta_j})\bigg)\bigg], $$
+	dove $\Phi(\cdot)$ è la f.d.p di una normale standard. 
+	
+	Analogamente per il parametro $\hat{\phi}$ è il seguente
+	$$\bigg[\hat{\phi} \pm \Phi^{-1}\bigg(1-\frac{\alpha}{2}SE(\hat{\phi})\bigg)  \bigg] $$ 
+	dove $SE(\hat{\phi})=\sqrt{tr(D)-\phi^{-1}c^tT^tX(X^tWX)^{-1}X^tTc}=\sqrt{\hat{\gamma}}.$
+
+\end{frame}
+
+\end{document}

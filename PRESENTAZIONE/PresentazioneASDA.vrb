@@ -1,0 +1,14 @@
+\frametitle{Funzione Predict}
+\begin{itemize}
+\item at: vettore numerico che indica il livello al quale i quantili vengono predetti se nel parametro
+textbf{type="quantile"} di default è assegnata la mediana \textbf{at=0.5}
+\end{itemize}
+ \begin{lstlisting}[,label={lst:signature}]
+ data("GasolineYield", package = "betareg")
+ gy2 <- betareg(yield ~ batch + temp | temp, data = GasolineYield)
+ cbind(predict(gy2, type = "response"),
+ predict(gy2, type = "link"),
+ predict(gy2, type = "precision"),
+ predict(gy2, type = "variance"),
+ predict(gy2, type = "quantile", at = c(0.25, 0.5, 0.75)))
+ \end{lstlisting}
